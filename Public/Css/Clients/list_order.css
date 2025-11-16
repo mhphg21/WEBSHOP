@@ -1,0 +1,55 @@
+.container-list-oder {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    width: 70%;
+}
+
+.container-list-oder h1 {
+    color: red;
+    margin-bottom: 5px;
+}
+
+.container-list-oder .info-pro-oder {
+    border: 1px solid #EAEAEA;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.container-list-oder .info-pro-oder .header1-oder {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container-list-oder .info-pro-oder .info-oders {
+    display:flex;
+    gap: 20px;
+}
+
+.container-list-oder .info-pro-oder .info-oders .info-oder {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.container-list-oder .info-pro-oder .info-oders .info-oder .des-oder {
+    width: 50%;
+}
+
+.container-list-oder .info-pro-oder .info-oders .info-oder .quantity-price-oder {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container-list-oder .total-oder {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #EAEAEA;
+    background-color: #FFFEFB;
+    padding: 20px;
+}

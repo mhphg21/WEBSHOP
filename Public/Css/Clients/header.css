@@ -1,0 +1,133 @@
+body {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.container-header1 {
+  margin: 0 auto;
+}
+
+.container-header1 .header1 {
+  width: 100%;
+  background-color: #29323a;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container-header1 .header1 div {
+  color: #ffe700;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Montserrat-Medium";
+}
+
+.container-header1 nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.container-header1 nav .nav-logo {
+  text-decoration: none;
+  font-family: "Montserrat-Bold";
+  font-size: 20px;
+  color: white;
+  background-color: #ff0000;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.container-header1 nav .categories ul {
+  display: flex;
+  gap: 30px;
+}
+
+.container-header1 nav .categories ul li {
+  list-style: none;
+  font-family: "Montserrat-Bold";
+  font-size: 14px;
+}
+
+.container-header1 nav .categories ul li a {
+  text-decoration: none;
+  color: #29323a;
+  cursor: pointer;
+}
+
+.container-header1 nav .categories ul li a:hover {
+  color: #ff0000;
+}
+
+.container-header1 nav .search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.container-header1 nav .search .input {
+  display: flex;
+  gap: 5px;
+}
+
+.container-header1 nav .search .input button {
+  border-radius: 5px;
+  background-color: white;
+  width: 80px;
+}
+
+.container-header1 nav .search .input input {
+  padding: 6px;
+  width: 250px;
+  border-radius: 5px;
+}
+
+.container-header1 nav .search .input input:focus {
+  width: 270px;
+}
+
+.container-header1 nav .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.container-header1 nav .nav-right .shop a {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+}
+
+.container-header1 nav .nav-right .shop a {
+  text-decoration: none;
+  color: #29323a;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.container-header1 nav .nav-right .shop a:hover {
+  color: #ff0000;
+}
+
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url("../../fonts/Montserrat-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Montserrat-Medium";
+  src: url("../../fonts/Montserrat-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Montserrat-Bold";
+  src: url("../../fonts/Montserrat-Bold.ttf") format("truetype");
+}

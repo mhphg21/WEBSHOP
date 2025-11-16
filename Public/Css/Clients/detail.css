@@ -1,0 +1,283 @@
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.categories {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.home {
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 30px;
+}
+
+.home a {
+    text-decoration: none;
+    color:#000;
+}
+
+.vach {
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 30px;
+}
+
+.category {
+    font-size: 12px;
+    font-weight: lighter;
+    color: gray;
+}
+
+.products-detail{
+    display: flex;
+}
+
+.images {
+    display: flex;
+    margin-right: 50px;
+}
+.main-image {
+    margin-right: 30px;
+}
+
+.child-img img.active {
+    border: 1px solid #000;
+}
+
+
+.name-pros {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.code-pros {
+    font-size: 14px;
+    font-weight: lighter;
+    color: gray;
+}
+
+.price-pros {
+    font-size: 24px;
+    font-weight: bolder;
+}
+
+.color {
+    font-size: 14px;
+    font-weight: bolder;
+}
+
+.color-choice {
+    display: flex;
+}
+
+.color-img {
+    margin-right: 10px;
+}
+
+.size {
+    font-size: 14px;
+    font-weight: lighter;
+    color: gray;
+}
+
+.size-block {
+    display: flex;
+}
+
+.bl-size {
+    padding: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: 1px solid gray;
+    margin-right: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bl-size:hover {
+    background-color: #D92A1C;
+    border: 1px solid #D92A1C;
+    color: white;
+}
+
+.bl-size.active {
+   background-color: #D92A1C;
+    border: 1px solid #D92A1C;
+    color: white;
+}
+
+.btn-action {
+    display: flex;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    justify-content: space-between;
+    gap: 50px;
+    
+}
+
+.btn-action button{
+     border: none;
+}
+
+.cart-btn {
+    font-size: 14px;
+    font-weight: bold;
+    /* padding: 20px 100px 20px 100px; */
+    padding: 15px 0 15px 0;
+    width: 50%;
+    color: white;
+    background-color: #D92A1C;
+    /* margin-right: 50px;  */
+    border-radius: 5px;
+}
+
+.buy-now {
+    font-size: 14px;
+    font-weight: bold;
+    /* padding: 20px 100px 20px 100px; */
+    padding: 15px 0 15px 0;
+    width: 50%;
+    color: white;
+    background-color: #015A49;
+    /* margin-right: 50px; */
+        border-radius: 5px;
+}
+
+.description {
+    margin-top: 20px;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+}
+
+.des {
+    font-size: 14px;
+    font-weight: bolder;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.content {
+    font-size: 14px;
+    font-weight: lighter;
+    color: gray;
+    margin-bottom: 15px;
+}
+
+.policies {
+    display: flex;
+    gap: 70px;
+  /* margin-left: 650px; */
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.policy {
+  display: flex;
+}
+
+.policy img {
+  margin-right: 15px;
+  margin-top: 15px;
+}
+
+.policy .text-policy .text-policy1 {
+  /* font-size: 20px; */
+  font-weight: bold;
+  margin-bottom: -2px;
+}
+
+.xemthem {
+    display: flex;
+    justify-content: space-between;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.title span {
+    color: red;
+}
+
+/* -------------------------PRODUCTS----------------------------- */
+
+.products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  max-width: 1440px;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.text-pros {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pro-name a {
+  text-decoration: none;
+  font-size: 16px;
+    font-weight: lighter;
+    color: black;
+}
+
+.old-price {
+  display: flex;
+  align-items: center;
+}
+
+.old-price .price {
+    font-size: 14px;
+    font-weight:lighter;
+}
+
+.old-price .sale {
+    font-size: 19px;
+    color: red;
+    font-weight: bold;
+}
+
+.new-price {
+    font-size: 19px;
+    font-weight: bolder;
+    margin-bottom: -7px;
+}
+
+.color {
+    display: flex;
+    margin-top: 10px;
+    gap: 8px;
+}
+
+
+.dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  /* background-color: #F4D9E8; */
+}
+
+.inner-dot {
+  border: 2px solid white;
+  border-radius: 50%;
+}
+
+.inner-dot:hover {
+  outline: 1px solid black;
+}
+
+.old-price .sale {
+  text-indent: 20px;
+}

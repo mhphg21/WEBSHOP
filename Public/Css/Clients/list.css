@@ -1,0 +1,180 @@
+.container-list {
+  width: 80%;
+  margin: 0 auto;
+}
+
+/* -------------------------POLICY----------------------------- */
+.container-list .banner img {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.container-list .policies {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.container-list .policy {
+  display: flex;
+}
+
+.container-list .policy img {
+  margin-right: 15px;
+}
+
+.container-list .policy .text-policy .text-policy1 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: -2px;
+}
+
+/* -------------------------VOUCHERS----------------------------- */
+.container-list .vouchers {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.container-list .voucher-box {
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 16px;
+  width: 400px;
+  font-family: Arial, sans-serif;
+  color: #1e293b;
+}
+
+.container-list .voucher-box h2 {
+  margin-top: 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.container-list .voucher-box p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.container-list .voucher-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.container-list .voucher-condition {
+  font-weight: bold;
+  font-size: 14px;
+  color: #1e293b;
+  text-decoration: none;
+}
+
+.container-list .use-button {
+  background-color: #1e293b;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* -------------------------PRODUCTS----------------------------- */
+.container-list .products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  width: 80%;
+  margin: 20px auto;
+}
+
+.container-list .text-pros {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.container-list .old-price {
+  display: flex;
+  align-items: center;
+}
+
+.container-list .pro-name a {
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: lighter;
+  color: black;
+}
+
+.container-list .old-price .price {
+  font-size: 14px;
+  font-weight: lighter;
+}
+
+.container-list .old-price .sale {
+  font-size: 19px;
+  color: red;
+  font-weight: bold;
+  text-indent: 20px;
+}
+
+.container-list .new-price {
+  margin-bottom: -13px;
+  font-size: 19px;
+  font-weight: bolder;
+}
+
+.container-list .color {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.container-list .inner-dot {
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.container-list .inner-dot:hover {
+  outline: 1px solid black;
+}
+
+.container-list .dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+}
+
+.container-list .green {
+  background-color: green;
+}
+
+.container-list .yellow {
+  background-color: yellow;
+}
+
+.container-list .black {
+  background-color: black;
+}
+
+/* -------------------------BANNER CONTENT----------------------------- */
+.container-list .banner-content img {
+  width: 100%;
+}
+
+/* -------------------------XEM TẤT CẢ----------------------------- */
+.container-list .view-all {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* -------------------------GALLEY----------------------------- */
+.container-list .galley {
+  display: flex;
+  justify-content: space-between;
+}

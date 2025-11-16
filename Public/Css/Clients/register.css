@@ -1,0 +1,118 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #e0e8f0;
+}
+
+.container {
+    display: flex;
+    width: 800px;
+    height: auto;
+    min-height: 500px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.welcome-section {
+    width: 40%;
+    background: #5d9cec;
+    color: #fff;
+    padding: 50px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.welcome-section h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.welcome-section p {
+    margin-bottom: 20px;
+}
+
+.register-btn {
+    padding: 10px 20px;
+    border: 2px solid #fff;
+    background: transparent;
+    color: #fff;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.register-btn:hover {
+    background: #fff;
+    color: #5d9cec;
+}
+
+.login-section {
+    width: 60%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-section h2 {
+    font-size: 26px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.input-box {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 12px 40px 12px 15px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.input-box input[type="file"] {
+    padding: 8px 10px;
+}
+
+.input-box .icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #777;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: #5d9cec;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.error {
+    color: red;
+    margin-bottom: 10px;
+}

@@ -1,0 +1,28 @@
+# Vendor dependencies
+vendor/
+node_modules/
+
+# Environment files
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Cache and logs
+*.log
+cache/
+temp/
+
+# Uploaded files (nếu có)
+uploads/
+Public/uploads/
+
+# Database config (nếu có thông tin nhạy cảm)
+# config/database.php
