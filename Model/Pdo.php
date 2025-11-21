@@ -5,7 +5,7 @@
  */
 function pdo_get_connection()
 {
-    $dburl = "mysql:host=localhost;dbname=duan1_v2;charset=utf8";
+    $dburl = "mysql:host=localhost;dbname=webshop;charset=utf8";
     $username = 'root';
     $password = '';
 

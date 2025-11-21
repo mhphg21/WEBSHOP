@@ -74,6 +74,9 @@ class AdminProductController
     public function update_variant_action()
     {
         $id = $_GET['id'] ?? null;
+        $product_id = $_GET['product_id'] ?? null;
+        $return = $_GET['return'] ?? 'list';
+        
         if ($id) {
             $sku = $_POST['sku'] ?? '';
             $price = $_POST['price'] ?? 0;
@@ -84,10 +87,19 @@ class AdminProductController
             $stmt = new AdminProduct();
             try {
                 $stmt->update_variant($is_hot, $sku, $price, $sale_price, $stock_quantity, $status, $id);
-                echo "<script>alert('Cập nhật biến thể thành công!'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
+                
+                if ($return === 'variants' && $product_id) {
+                    echo "<script>alert('Cập nhật biến thể thành công!'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=variants';</script>";
+                } else {
+                    echo "<script>alert('Cập nhật biến thể thành công!'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
+                }
                 exit;
             } catch (Exception $e) {
-                echo "<script>alert('Cập nhật biến thể không thành công!'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
+                if ($return === 'variants' && $product_id) {
+                    echo "<script>alert('Cập nhật biến thể không thành công!'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=variants';</script>";
+                } else {
+                    echo "<script>alert('Cập nhật biến thể không thành công!'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
+                }
             }
         }
     }
@@ -145,84 +157,89 @@ class AdminProductController
     // 
     public function create_product_action()
     {
-        // b1: Thêm sản phẩm
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-            $pro_name = $_POST['name'] ?? '';
-            $pro_description = $_POST['description'] ?? '';
-            $pro_status = $_POST['status'] ?? '';
-            $pro_category_id = $_POST['category_id'] ?? '';
-            $pro_price = $_POST['price'] ?? '0';
-            $pro_sale_price = $_POST['sale_price'] ?? '0';
-            $pro_image = $_FILES['image_product'];
-            $pro_new = 1;
-            $pro_hot = 0;
-
-            if (isset($pro_image) && $pro_image['error'] === 0) {
-                $upload_dir = './Public/Img/uploads/';
-                if (getimagesize($pro_image["tmp_name"])) {
-                    $ext = pathinfo($pro_image['name'], PATHINFO_EXTENSION);
+            $upload_dir = './Public/Img/uploads/';
+            $new_image_name = '';
+            
+            // Upload ảnh sản phẩm chính
+            if (isset($_FILES['image_product']) && $_FILES['image_product']['error'] === 0) {
+                if (getimagesize($_FILES['image_product']["tmp_name"])) {
+                    $ext = pathinfo($_FILES['image_product']['name'], PATHINFO_EXTENSION);
                     $new_image_name = time() . '_' . uniqid() . '.' . $ext;
-                    $img_path = $upload_dir . $new_image_name;
-                    move_uploaded_file($pro_image["tmp_name"], $img_path);
+                    move_uploaded_file($_FILES['image_product']["tmp_name"], $upload_dir . $new_image_name);
                 } else {
                     echo "File không phải là ảnh!";
+                    return;
                 }
             }
+            
             $stmt = new AdminProduct();
-            $product_id = $stmt->create_product($pro_category_id, $pro_name, $pro_description, $new_image_name, $pro_price, $pro_sale_price, $pro_status, $pro_new, $pro_hot);
+            $product_id = $stmt->create_product(
+                $_POST['category_id'] ?? '', 
+                $_POST['name'] ?? '', 
+                $_POST['description'] ?? '', 
+                $new_image_name, 
+                $_POST['price'] ?? 0, 
+                $_POST['sale_price'] ?? 0, 
+                $_POST['status'] ?? '', 
+                1, // is_new
+                0  // is_hot
+            );
 
             // b2: Thêm biến thể
+            $material = $_POST['material'] ?? null;
+            
             if (isset($_POST['variants'])) {
-                foreach ($_POST['variants'] as $index => $value) {
+                foreach ($_POST['variants'] as $value) {
+                    if ($stmt->check_variant_exists($value['sku'] ?? '')) continue;
+                    
+                    $pv_id = $stmt->create_product_variants(
+                        $product_id, 
+                        0, // is_hot
+                        $value['sku'] ?? '', 
+                        $value['price'] ?? 0, 
+                        $value['sale_price'] ?? 0, 
+                        $value['quantity'] ?? 0, 
+                        $value['status'] ?? 'active'
+                    );
 
-                    $color = $value['color'] ?? null;
-                    $size = $value['size'] ?? null;
-                    $material = $value['material'] ?? null;
-                    $price = $value['price'] ?? 0;
-                    $sale_price = $value['sale_price'] ?? 0;
-                    $quantity = $value['quantity'] ?? 0;
-                    $sku = $value['sku'] ?? '';
-                    $variant_status = $value['status'] ?? 'active';
-
-                    $act = new AdminProduct();
-
-                    $exists = $stmt->check_variant_exists($sku);
-                    if (!$exists) {
-                        $pv_id = $act->create_product_variants($product_id, $pro_hot, $sku, $price, $sale_price, $quantity, $variant_status);
-
-                        $act->create_variant_attribute_values($pv_id, 1, $color);
-                        $act->create_variant_attribute_values($pv_id, 2, $size);
-                        $act->create_variant_attribute_values($pv_id, 3, $material);
-                    }else{
-                        continue;
+                    if ($pv_id) {
+                        $stmt->create_variant_attribute_values($pv_id, 1, $value['color'] ?? null);
+                        $stmt->create_variant_attribute_values($pv_id, 2, $value['size'] ?? null);
+                        $stmt->create_variant_attribute_values($pv_id, 3, $material);
                     }
-
                 }
             }
 
-            // b3: Thêm ảnh cho từng màu + sản phẩm
-            $upload_dir = './Public/Img/uploads/';
-            $path = "./Public/Img/uploads/";
-            if (isset($_FILES['color_images'])) {
-                foreach ($_FILES['color_images']['name'] as $index => $images) {
-                    foreach ($images as $i => $imgName) {
-                        if ($imgName) {
-                            $image_ext = pathinfo($imgName, PATHINFO_EXTENSION);
-                            $image_url = time() . '_' . uniqid() . '.' . $image_ext;
-
-                            move_uploaded_file($_FILES['color_images']['tmp_name'][$index][$i], $upload_dir . $image_url);
-
-                            // Ảnh đầu tiên là ảnh chính, còn lại ảnh phụ
-                            $is_primary = ($i === 0) ? 1 : 2;
-                            $color_value_id = $index;
-                            // Thêm ảnh vào db
-                            $add_img = new AdminProduct();
-                            $add_img->create_variant_image($product_id, $color_value_id, $image_url, $is_primary, $path);
+            // b3: Thêm ảnh cho từng màu
+            $path = './Public/Img/uploads/';
+            
+            // Ảnh chính
+            if (isset($_FILES['color_primary_image']['name'])) {
+                foreach ($_FILES['color_primary_image']['name'] as $color_id => $imgName) {
+                    if ($imgName && $_FILES['color_primary_image']['error'][$color_id] === 0) {
+                        $image_url = time() . '_' . uniqid() . '.' . pathinfo($imgName, PATHINFO_EXTENSION);
+                        move_uploaded_file($_FILES['color_primary_image']['tmp_name'][$color_id], $path . $image_url);
+                        $stmt->create_variant_image($product_id, $color_id, $image_url, 1, $path);
+                    }
+                }
+            }
+            
+            // Ảnh phụ
+            if (isset($_FILES['color_images']['name'])) {
+                foreach ($_FILES['color_images']['name'] as $color_id => $images) {
+                    if (is_array($images)) {
+                        foreach ($images as $i => $imgName) {
+                            if ($imgName && $_FILES['color_images']['error'][$color_id][$i] === 0) {
+                                $image_url = time() . '_' . uniqid() . '.' . pathinfo($imgName, PATHINFO_EXTENSION);
+                                move_uploaded_file($_FILES['color_images']['tmp_name'][$color_id][$i], $path . $image_url);
+                                $stmt->create_variant_image($product_id, $color_id, $image_url, 2, $path);
+                            }
                         }
                     }
                 }
             }
+            
             echo "<script>alert('Thêm sản phẩm và biến thể thành công!'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
             exit;
 
@@ -238,7 +255,7 @@ class AdminProductController
         $get_size = $act->get_att_value(2);
         $get_material = $act->get_att_value(3);
         include './Views/admin/layouts/dashboard.php';
-        include './Views/admin/products/create_product.php';
+        include './Views/admin/products/create_product_new.php';
         include './Views/admin/layouts/footer.php';
     }
 
@@ -247,46 +264,56 @@ class AdminProductController
         $stmt = new AdminProduct();
         $id = $_GET['id'];
         $get_categories = $stmt->get_categories();
-        $product = $stmt->get_product_by_id($_GET['id']);
-        print_r($product);
+        $product = $stmt->get_product_by_id($id);
+        
+        // Lấy thêm dữ liệu cho quản lý biến thể
+        $product_images = $stmt->get_product_images_by_color($id);
+        $existing_colors = $stmt->get_existing_colors($id);
+        $existing_sizes = $stmt->get_existing_sizes($id);
+        $product_material = $stmt->get_product_material($id);
+        $product_variants = $stmt->get_product_variant($id);
+        
+        // Lấy danh sách đầy đủ các thuộc tính
+        $get_color = $stmt->get_att_value(1);
+        $get_size = $stmt->get_att_value(2);
+        $get_material = $stmt->get_att_value(3);
+        
         include './Views/admin/layouts/dashboard.php';
-        include './Views/admin/products/update_product.php';
+        include './Views/admin/products/update_product_advanced.php';
         include './Views/admin/layouts/footer.php';
     }
     public function update_product_action()
     {
         try {
-            if (isset($_GET['id'])) {
-                $edit_pro = $_GET['id'];
-                $name = $_POST['name'] ?? "";
-                $category_id = $_POST['category_id'] ?? 1;
-                $description = $_POST['description'] ?? '';
-                $price = $_POST['price'] ?? 0;
-                $sale_price = $_POST['sale_price'] ?? 0;
-                $is_new = isset($_POST['is_new']) ? 1 : 0;
-                $is_hot = isset($_POST['is_hot']) ? 1 : 0;
-                $image_url = $_POST['current_image'] ?? '';
-                $file = $_FILES['image_url'];
-                $status = $_POST['status'];
-
-                // Xử lý ảnh (nếu có upload mới)
-                if (!empty($file['tmp_name']) && getimagesize($file['tmp_name'])) {
-                    $image_url = time() . '_' . basename($file['name']);
-                    move_uploaded_file($file['tmp_name'], "./Public/Img/uploads/" . $image_url);
-                }
-
-                $action = new AdminProduct();
-                $result = $action->update_product($category_id, $name, $description, $image_url, $price, $sale_price, $status, $is_new, $is_hot, $edit_pro);
-
-                if ($result) {
-                    echo "<script>alert('✅ Cập nhật sản phẩm thành công!'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
-                } else {
-                    echo "<script>alert('❌ Cập nhật thất bại. Vui lòng thử lại.'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
-                }
+            if (!isset($_GET['id'])) return;
+            
+            $id = $_GET['id'];
+            $image_url = $_POST['current_image'] ?? '';
+            
+            // Upload ảnh mới nếu có
+            if (!empty($_FILES['image_url']['tmp_name']) && getimagesize($_FILES['image_url']['tmp_name'])) {
+                $image_url = time() . '_' . basename($_FILES['image_url']['name']);
+                move_uploaded_file($_FILES['image_url']['tmp_name'], "./Public/Img/uploads/" . $image_url);
             }
+
+            $stmt = new AdminProduct();
+            $result = $stmt->update_product(
+                $_POST['category_id'] ?? 1,
+                $_POST['name'] ?? '',
+                $_POST['description'] ?? '',
+                $image_url,
+                $_POST['price'] ?? 0,
+                $_POST['sale_price'] ?? 0,
+                $_POST['status'] ?? 'active',
+                isset($_POST['is_new']) ? 1 : 0,
+                isset($_POST['is_hot']) ? 1 : 0,
+                $id
+            );
+
+            $msg = $result ? '✅ Cập nhật sản phẩm thành công!' : '❌ Cập nhật thất bại!';
+            echo "<script>alert('$msg'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
         } catch (Exception $e) {
-            $msg = $e->getMessage();
-            echo "<script>alert('Lỗi: $msg'); window.location.href = 'index.php?route=admin';</script>";
+            echo "<script>alert('Lỗi: {$e->getMessage()}'); window.location.href = 'index.php?route=admin';</script>";
         }
     }
 
@@ -383,6 +410,308 @@ class AdminProductController
         include './Views/admin/layouts/footer.php';
     }
 
+    // Thêm ảnh mới cho sản phẩm
+    public function add_product_images()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $product_id = $_GET['id'];
+            $tab = $_GET['tab'] ?? 'images';
+            $color_id = $_POST['color_id'];
+            $upload_dir = './Public/Img/uploads/';
+            $stmt = new AdminProduct();
+
+            // Upload ảnh chính
+            if (isset($_FILES['primary_image']) && $_FILES['primary_image']['error'] === 0) {
+                $ext = pathinfo($_FILES['primary_image']['name'], PATHINFO_EXTENSION);
+                $new_name = time() . '_' . uniqid() . '.' . $ext;
+                
+                if (move_uploaded_file($_FILES['primary_image']['tmp_name'], $upload_dir . $new_name)) {
+                    $stmt->create_variant_image($product_id, $color_id, $new_name, 1, $upload_dir);
+                }
+            }
+
+            // Upload ảnh phụ
+            if (isset($_FILES['secondary_images']) && !empty($_FILES['secondary_images']['name'][0])) {
+                foreach ($_FILES['secondary_images']['tmp_name'] as $index => $tmp_name) {
+                    if ($_FILES['secondary_images']['error'][$index] === 0) {
+                        $ext = pathinfo($_FILES['secondary_images']['name'][$index], PATHINFO_EXTENSION);
+                        $new_name = time() . '_' . uniqid() . '.' . $ext;
+                        
+                        if (move_uploaded_file($tmp_name, $upload_dir . $new_name)) {
+                            $stmt->create_variant_image($product_id, $color_id, $new_name, 2, $upload_dir);
+                        }
+                    }
+                }
+            }
+
+            echo "<script>alert('Thêm ảnh thành công!'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=$tab';</script>";
+        }
+    }
+
+    // Xóa ảnh sản phẩm
+    public function delete_product_image()
+    {
+        $product_id = $_GET['id'];
+        $image_id = $_GET['image_id'];
+        $tab = $_GET['tab'] ?? 'images';
+        
+        $stmt = new AdminProduct();
+        $image = $stmt->get_image_by_id($image_id);
+        
+        if ($image) {
+            // Xóa file vật lý
+            $file_path = './Public/Img/uploads/' . $image['image_url'];
+            if (file_exists($file_path)) {
+                unlink($file_path);
+            }
+            
+            // Xóa record trong database
+            $stmt->delete_product_image($image_id);
+            echo "<script>alert('Xóa ảnh thành công!'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=$tab';</script>";
+        } else {
+            echo "<script>alert('Không tìm thấy ảnh!'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=$tab';</script>";
+        }
+    }
+
+    // Cập nhật ảnh sản phẩm
+    public function update_product_image()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $product_id = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
+            $image_id = isset($_POST['image_id']) ? (int)$_POST['image_id'] : 0;
+            $tab = $_POST['tab'] ?? 'images';
+            $is_primary = isset($_POST['is_primary']) ? (int)$_POST['is_primary'] : null;
+            
+            // Validate input
+            if ($product_id <= 0 || $image_id <= 0) {
+                echo "<script>alert('Dữ liệu không hợp lệ!'); history.back();</script>";
+                return;
+            }
+            
+            $stmt = new AdminProduct();
+            $old_image = $stmt->get_image_by_id($image_id);
+            
+            if (!$old_image) {
+                echo "<script>alert('Không tìm thấy ảnh với ID: $image_id'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=$tab';</script>";
+                return;
+            }
+            
+            $new_image_url = null;
+            $path = null;
+            $upload_dir = './Public/Img/uploads/';
+            $has_new_file = false;
+            
+            // Kiểm tra xem có upload file mới không
+            if (isset($_FILES['new_image']) && $_FILES['new_image']['error'] === 0) {
+                $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                $ext = strtolower(pathinfo($_FILES['new_image']['name'], PATHINFO_EXTENSION));
+                
+                if (!in_array($ext, $allowed_extensions)) {
+                    echo "<script>alert('Chỉ chấp nhận file ảnh: jpg, jpeg, png, gif, webp'); history.back();</script>";
+                    return;
+                }
+                
+                $new_name = time() . '_' . uniqid() . '.' . $ext;
+                
+                if (move_uploaded_file($_FILES['new_image']['tmp_name'], $upload_dir . $new_name)) {
+                    // Xóa ảnh cũ nếu upload thành công
+                    $old_file = $upload_dir . $old_image['image_url'];
+                    if (file_exists($old_file)) {
+                        @unlink($old_file);
+                    }
+                    $new_image_url = $new_name;
+                    $path = $upload_dir;
+                    $has_new_file = true;
+                } else {
+                    echo "<script>alert('Upload file thất bại!'); history.back();</script>";
+                    return;
+                }
+            }
+            
+            // Kiểm tra xem có thay đổi gì không
+            if (!$has_new_file && ($is_primary === null || $is_primary == $old_image['is_primary'])) {
+                echo "<script>alert('Không có thay đổi nào!'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=$tab';</script>";
+                return;
+            }
+            
+            // Cập nhật database
+            try {
+                $result = $stmt->update_product_image($image_id, $new_image_url, $is_primary, $path);
+                
+                if ($result !== false) {
+                    $message = 'Cập nhật thành công!';
+                    if ($has_new_file && $is_primary !== null && $is_primary != $old_image['is_primary']) {
+                        $message = 'Đã cập nhật cả file ảnh và loại ảnh!';
+                    } elseif ($has_new_file) {
+                        $message = 'Đã thay đổi file ảnh!';
+                    } elseif ($is_primary !== null) {
+                        $message = 'Đã đổi loại ảnh!';
+                    }
+                    echo "<script>alert('$message'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=$tab';</script>";
+                } else {
+                    // Nếu update fail và đã upload file mới, xóa file mới
+                    if ($has_new_file && isset($new_name)) {
+                        @unlink($upload_dir . $new_name);
+                    }
+                    echo "<script>alert('Cập nhật database thất bại!'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=$tab';</script>";
+                }
+            } catch (Exception $e) {
+                // Rollback: Xóa file mới nếu có
+                if ($has_new_file && isset($new_name)) {
+                    @unlink($upload_dir . $new_name);
+                }
+                echo "<script>alert('Lỗi: " . addslashes($e->getMessage()) . "'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=$tab';</script>";
+            }
+        }
+    }
+
+    // Xóa biến thể
+    public function delete_variant()
+    {
+        $variant_id = $_GET['id'] ?? 0;
+        $product_id = $_GET['product_id'] ?? 0;
+        $tab = $_GET['tab'] ?? 'variants';
+        $redirect = "index.php?route=admin&action=update_product&id=$product_id&tab=$tab";
+        
+        if ($variant_id <= 0 || $product_id <= 0) {
+            echo "<script>alert('Dữ liệu không hợp lệ!'); history.back();</script>";
+            return;
+        }
+        
+        $stmt = new AdminProduct();
+        
+        if (!$stmt->get_variant_by_id($variant_id)) {
+            echo "<script>alert('Không tìm thấy biến thể!'); window.location.href = '$redirect';</script>";
+            return;
+        }
+        
+        if ($stmt->check_variant_in_orders($variant_id)) {
+            echo "<script>alert('Không thể xóa biến thể này vì đã có trong đơn hàng!\\nBạn có thể ẩn biến thể bằng cách đổi trạng thái thành Hidden.'); window.location.href = '$redirect';</script>";
+            return;
+        }
+        
+        try {
+            $stmt->delete_variant_attributes($variant_id);
+            $result = $stmt->delete_variant($variant_id);
+            $msg = $result ? 'Xóa biến thể thành công!' : 'Xóa biến thể thất bại!';
+            echo "<script>alert('$msg'); window.location.href = '$redirect';</script>";
+        } catch (Exception $e) {
+            echo "<script>alert('Lỗi: " . addslashes($e->getMessage()) . "'); window.location.href = '$redirect';</script>";
+        }
+    }
+
+    // Thêm biến thể hàng loạt
+    public function add_variants_bulk()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $product_id = $_GET['id'];
+            $tab = $_GET['tab'] ?? 'variants';
+            $new_colors = $_POST['new_colors'] ?? [];
+            $new_sizes = $_POST['new_sizes'] ?? [];
+            $material = $_POST['material'];
+            $default_price = $_POST['default_price'];
+            $default_sale_price = $_POST['default_sale_price'];
+
+            if (empty($new_colors) || empty($new_sizes)) {
+                echo "<script>alert('Vui lòng chọn ít nhất 1 màu và 1 size!'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=$tab';</script>";
+                return;
+            }
+
+            $stmt = new AdminProduct();
+            $created_count = 0;
+
+            foreach ($new_colors as $color_id) {
+                foreach ($new_sizes as $size_id) {
+                    $sku = 'PRO' . $product_id . '-C' . $color_id . '-S' . $size_id;
+
+                    $variant_id = $stmt->create_product_variants(
+                        $product_id,
+                        0,
+                        $sku,
+                        $default_price,
+                        $default_sale_price,
+                        0,
+                        'active'
+                    );
+
+                    if ($variant_id) {
+                        $stmt->create_variant_attribute_values($variant_id, 1, $color_id);
+                        $stmt->create_variant_attribute_values($variant_id, 2, $size_id);
+                        $stmt->create_variant_attribute_values($variant_id, 3, $material);
+                        $created_count++;
+                    }
+                }
+            }
+
+            echo "<script>alert('Đã tạo $created_count biến thể mới!'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=$tab';</script>";
+        }
+    }
+
+    // Thêm 1 biến thể mới (người dùng tự nhập đầy đủ thông tin)
+    public function add_single_variant()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $product_id = $_GET['id'];
+            $tab = $_GET['tab'] ?? 'variants';
+            
+            $sku = trim($_POST['sku'] ?? '');
+            $color_id = $_POST['color_id'] ?? null;
+            $size_id = $_POST['size_id'] ?? null;
+            $material_id = $_POST['material_id'] ?? null;
+            $price = $_POST['price'] ?? 0;
+            $sale_price = $_POST['sale_price'] ?? 0;
+            $stock_quantity = $_POST['stock_quantity'] ?? 0;
+            $status = $_POST['status'] ?? 'active';
+            
+            // Validate
+            if (empty($sku) || empty($color_id) || empty($size_id)) {
+                echo "<script>alert('Vui lòng nhập đầy đủ thông tin!'); history.back();</script>";
+                return;
+            }
+            
+            $stmt = new AdminProduct();
+            
+            try {
+                // Kiểm tra SKU đã tồn tại chưa
+                $existing = $stmt->check_sku_exists($sku);
+                if ($existing) {
+                    echo "<script>alert('SKU đã tồn tại!'); history.back();</script>";
+                    return;
+                }
+                
+                // Tạo biến thể
+                $variant_id = $stmt->create_product_variants(
+                    $product_id,
+                    0, // is_hot
+                    $sku,
+                    $price,
+                    $sale_price,
+                    $stock_quantity,
+                    $status
+                );
+                
+                if ($variant_id) {
+                    // Thêm thuộc tính màu
+                    $stmt->create_variant_attribute_values($variant_id, 1, $color_id);
+                    
+                    // Thêm thuộc tính size
+                    $stmt->create_variant_attribute_values($variant_id, 2, $size_id);
+                    
+                    // Thêm thuộc tính material nếu có
+                    if ($material_id) {
+                        $stmt->create_variant_attribute_values($variant_id, 3, $material_id);
+                    }
+                    
+                    echo "<script>alert('Đã thêm biến thể mới thành công!'); window.location.href = 'index.php?route=admin&action=update_product&id=$product_id&tab=$tab';</script>";
+                } else {
+                    echo "<script>alert('Không thể tạo biến thể!'); history.back();</script>";
+                }
+                
+            } catch (Exception $e) {
+                echo "<script>alert('Lỗi: " . addslashes($e->getMessage()) . "'); history.back();</script>";
+            }
+        }
+    }
 
 }
 
