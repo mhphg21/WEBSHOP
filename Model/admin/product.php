@@ -10,7 +10,7 @@ class AdminProduct
               FROM products p 
               LEFT JOIN product_variants v ON p.id = v.product_id 
               LEFT JOIN categories c ON p.category_id = c.id 
-              WHERE 1=1 ";  // điều kiện luôn đúng, để dễ nối các điều kiện tiếp theo
+              WHERE 1=1 ";
 
         // Nếu lọc theo danh mục
         if ($filter_by_categories > 0) {
@@ -18,14 +18,14 @@ class AdminProduct
             $params[] = $filter_by_categories;
         }
 
-        // Nếu tìm kiếm theo tên sản phẩm
+        // Nếu tìm kiếm theo tên sản phẩm hoặc SKU
         if (!empty($keyword)) {
-            $query .= "AND p.name LIKE ? ";
-            $params[] = "%" . $keyword . "%";  // tìm kiếm gần đúng
+            $query .= "AND (p.name LIKE ? OR v.sku LIKE ?) ";
+            $params[] = "%" . $keyword . "%";
+            $params[] = "%" . $keyword . "%";
         }
 
         $query .= "GROUP BY p.id LIMIT $start, $limit";
-
 
         return pdo_query($query, ...$params);
     }

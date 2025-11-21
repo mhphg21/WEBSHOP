@@ -237,7 +237,7 @@
     </header>
     <div class="nav-header">
       <a class="nav-logo" href="index.php?route=clients&action=home<?= isset($user_id) && !empty($user_id) ? '&user_id=' . $user_id : '' ?>">
-        <div class="logo">2TGD</div>
+        <div class="logo">2PNH</div>
       </a>
       <div class="categories">
         <ul>

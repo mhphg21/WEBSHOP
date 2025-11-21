@@ -10,7 +10,7 @@
     <form method="post" action="index.php?route=admin&action=list_product" class="mb-3">
         <div class="row g-2 align-items-center">
             <div class="col-auto">
-                <input type="text" class="form-control" name="keyword" placeholder="Tìm kiếm sản phẩm">
+                <input type="text" class="form-control" name="keyword" placeholder="Tìm theo tên hoặc mã SKU">
             </div>
             <div class="col-auto">
                 <select class="form-select" name="filter_by_categories" id="filter_by_categories">
