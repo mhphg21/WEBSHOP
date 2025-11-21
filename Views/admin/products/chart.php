@@ -59,15 +59,15 @@
                     <h5 class="fw-bold text-dark mb-3">Tổng quan</h5>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-secondary">Tổng Doanh thu</span>
-                        <span class="fw-bold text-success"><?=number_format($get_total_revenue_and_orders['tongtien'])?> VND</span>
+                        <span class="fw-bold text-success"><?=number_format($get_total_revenue_and_orders['tongtien'] ?? 0)?> VND</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-secondary">Số đơn hàng</span>
-                        <span class="fw-bold text-info"><?=$get_total_revenue_and_orders['tongsoluong']?></span>
+                        <span class="fw-bold text-info"><?=$get_total_revenue_and_orders['tongsoluong'] ?? 0?></span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <span class="text-secondary">Sản phẩm bán chạy</span>
-                        <span class="fw-bold text-warning"><?=$best_selling['name']?></span>
+                        <span class="fw-bold text-warning"><?=isset($best_selling['name']) ? $best_selling['name'] : 'Chưa có dữ liệu'?></span>
                     </div>
                 </div>
             </div>

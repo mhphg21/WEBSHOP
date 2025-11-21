@@ -394,14 +394,32 @@ class AdminController
         // echo "<pre>";
         // die();
         if (isset($_POST['confirm_create_coupons'])) {
-            $code = htmlspecialchars($_POST['code']);
-            $discount_value =  str_replace(',', '', $_POST['discount_value']); // loại bỏ dấu phẩy
-            $min_order_value =  str_replace(',', '', $_POST['min_order_value']); // loại bỏ dấu phẩy
-            $usage_limit = htmlspecialchars($_POST['usage_limit']);
-            $start_date = htmlspecialchars($_POST['start_date']);
-            $end_date = htmlspecialchars($_POST['end_date']);
+            // Verify CSRF token
+            try {
+                CsrfHelper::verifyOrFail();
+            } catch (Exception $e) {
+                echo "<script>alert('" . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                exit;
+            }
+
+            $code = htmlspecialchars(trim($_POST['code'] ?? ''));
+            $discount_value = str_replace(',', '', $_POST['discount_value'] ?? '0'); // loại bỏ dấu phẩy
+            $min_order_value = str_replace(',', '', $_POST['min_order_value'] ?? '0'); // loại bỏ dấu phẩy
+            $usage_limit = intval($_POST['usage_limit'] ?? 0);
+            $start_date = htmlspecialchars($_POST['start_date'] ?? '');
+            $end_date = htmlspecialchars($_POST['end_date'] ?? '');
+
+            // Validate
+            if (empty($code) || $discount_value <= 0 || $usage_limit <= 0) {
+                echo "<script>alert('Vui lòng điền đầy đủ thông tin hợp lệ'); window.history.back();</script>";
+                exit;
+            }
 
             $model->create_coupon($code, $discount_value, $min_order_value, $usage_limit, $start_date, $end_date);
+            
+            // Regenerate token sau khi thành công
+            CsrfHelper::regenerateToken();
+            
             header("Location: index.php?route=admin&action=list_coupons_page&create=create");
             exit;
         }

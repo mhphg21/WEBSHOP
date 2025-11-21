@@ -4,7 +4,7 @@
             <h5 class="mb-0">Chỉnh sửa biến thể sản phẩm</h5>
         </div>
         <div class="card-body">
-            <form action="index.php?route=admin&action=update_variant&id=<?= $product['id'] ?>" 
+            <form action="index.php?route=admin&action=update_variant&id=<?= $product['id'] ?>&product_id=<?= $_GET['product_id'] ?? '' ?>&return=<?= $_GET['return'] ?? 'list' ?>" 
                   method="POST" enctype="multipart/form-data">
                   
                 <!-- ID biến thể -->
@@ -63,10 +63,17 @@
                             onclick="return confirm('Bạn có chắc muốn lưu lại cập nhật?')">
                         <i class="fas fa-save me-1"></i> Cập nhật
                     </button>
-                    <a href="index.php?route=admin&action=list_product" 
-                       class="btn btn-secondary">
-                        <i class="fas fa-times me-1"></i> Hủy
-                    </a>
+                    <?php if (isset($_GET['return']) && $_GET['return'] === 'variants' && isset($_GET['product_id'])): ?>
+                        <a href="index.php?route=admin&action=update_product&id=<?= $_GET['product_id'] ?>&tab=variants" 
+                           class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Hủy
+                        </a>
+                    <?php else: ?>
+                        <a href="index.php?route=admin&action=list_product" 
+                           class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Hủy
+                        </a>
+                    <?php endif; ?>
                 </div>
             </form>
         </div>

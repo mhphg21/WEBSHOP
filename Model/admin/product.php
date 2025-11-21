@@ -83,7 +83,35 @@ class AdminProduct
     public function delete_variant($id)
     {
         $query = "DELETE FROM product_variants WHERE id = ?";
-        pdo_execute($query, $id);
+        return pdo_execute($query, $id);
+    }
+
+    // Kiểm tra biến thể có trong đơn hàng không
+    public function check_variant_in_orders($variant_id)
+    {
+        $query = "SELECT COUNT(*) as count FROM order_details WHERE product_variant_id = ?";
+        $result = pdo_query_one($query, $variant_id);
+        return $result && $result['count'] > 0;
+    }
+
+    // Xóa các thuộc tính của biến thể
+    public function delete_variant_attributes($variant_id)
+    {
+        $query = "DELETE FROM variant_attribute_values WHERE product_variant_id = ?";
+        return pdo_execute($query, $variant_id);
+    }
+
+    // Kiểm tra SKU đã tồn tại chưa
+    public function check_sku_exists($sku, $exclude_variant_id = null)
+    {
+        if ($exclude_variant_id) {
+            $query = "SELECT COUNT(*) as count FROM product_variants WHERE sku = ? AND id != ?";
+            $result = pdo_query_one($query, $sku, $exclude_variant_id);
+        } else {
+            $query = "SELECT COUNT(*) as count FROM product_variants WHERE sku = ?";
+            $result = pdo_query_one($query, $sku);
+        }
+        return $result && $result['count'] > 0;
     }
 
 
@@ -355,5 +383,102 @@ ORDER BY total_products DESC";
             LIMIT 1";
         $result = pdo_query_one($query);
         return $result;
+    }
+
+    // Lấy tất cả ảnh của sản phẩm theo màu
+    public function get_product_images_by_color($product_id)
+    {
+        $query = "SELECT pvi.*, av.value as color_name 
+                  FROM product_variant_images pvi
+                  JOIN attribute_values av ON pvi.color_id = av.id
+                  WHERE pvi.product_id = ?
+                  ORDER BY pvi.color_id, pvi.is_primary DESC";
+        return pdo_query($query, $product_id);
+    }
+
+    // Lấy danh sách màu đã có của sản phẩm
+    public function get_existing_colors($product_id)
+    {
+        $query = "SELECT DISTINCT av.id, av.value
+                  FROM product_variant_images pvi
+                  JOIN attribute_values av ON pvi.color_id = av.id
+                  WHERE pvi.product_id = ?
+                  ORDER BY av.value";
+        return pdo_query($query, $product_id);
+    }
+
+    // Lấy danh sách size đã có của sản phẩm
+    public function get_existing_sizes($product_id)
+    {
+        $query = "SELECT DISTINCT av.id, av.value
+                  FROM product_variants pv
+                  JOIN variant_attribute_values vav ON pv.id = vav.product_variant_id
+                  JOIN attribute_values av ON vav.attribute_value_id = av.id
+                  WHERE pv.product_id = ? AND vav.attribute_id = 2
+                  ORDER BY av.value";
+        return pdo_query($query, $product_id);
+    }
+
+    // Xóa ảnh sản phẩm
+    public function delete_product_image($image_id)
+    {
+        $query = "DELETE FROM product_variant_images WHERE id = ?";
+        return pdo_execute($query, $image_id);
+    }
+
+    // Lấy thông tin ảnh theo ID
+    public function get_image_by_id($image_id)
+    {
+        $query = "SELECT * FROM product_variant_images WHERE id = ?";
+        return pdo_query_one($query, $image_id);
+    }
+
+    // Cập nhật ảnh sản phẩm (thay thế file hoặc đổi loại ảnh)
+    public function update_product_image($image_id, $new_image_url = null, $is_primary = null, $path = null)
+    {
+        try {
+            // Trường hợp 1: Có file mới và có thay đổi loại ảnh
+            if ($new_image_url !== null && $is_primary !== null && $path !== null) {
+                $query = "UPDATE product_variant_images SET image_url = ?, is_primary = ?, path = ? WHERE id = ?";
+                pdo_execute($query, $new_image_url, $is_primary, $path, $image_id);
+                return true;
+            } 
+            // Trường hợp 2: Chỉ có file mới (không thay đổi loại)
+            elseif ($new_image_url !== null && $path !== null) {
+                $query = "UPDATE product_variant_images SET image_url = ?, path = ? WHERE id = ?";
+                pdo_execute($query, $new_image_url, $path, $image_id);
+                return true;
+            } 
+            // Trường hợp 3: Chỉ thay đổi loại ảnh (không upload file mới)
+            elseif ($is_primary !== null) {
+                $query = "UPDATE product_variant_images SET is_primary = ? WHERE id = ?";
+                pdo_execute($query, $is_primary, $image_id);
+                return true;
+            }
+            
+            return false;
+        } catch (PDOException $e) {
+            error_log("Update image error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Lấy chất liệu của sản phẩm
+    public function get_product_material($product_id)
+    {
+        $query = "SELECT DISTINCT av.id, av.value
+                  FROM product_variants pv
+                  JOIN variant_attribute_values vav ON pv.id = vav.product_variant_id
+                  JOIN attribute_values av ON vav.attribute_value_id = av.id
+                  WHERE pv.product_id = ? AND vav.attribute_id = 3
+                  LIMIT 1";
+        return pdo_query_one($query, $product_id);
+    }
+
+    // Lấy giá trị thuộc tính theo ID
+    public function get_att_value_by_id($id)
+    {
+        $query = "SELECT * FROM attribute_values WHERE id = ?";
+        return pdo_query_one($query, $id);
     }
 }

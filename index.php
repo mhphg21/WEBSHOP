@@ -308,6 +308,42 @@ switch ($route) {
                     $admin = new AdminProductController();
                     $admin->update_product_action();
                     break;
+                
+                // Cập nhật ảnh sản phẩm
+                case "update_product_image":
+                    $admin = new AdminProductController();
+                    $admin->update_product_image();
+                    break;
+                
+                // Thêm ảnh cho sản phẩm
+                case "add_product_images":
+                    $admin = new AdminProductController();
+                    $admin->add_product_images();
+                    break;
+                
+                // Xóa ảnh sản phẩm
+                case "delete_product_image":
+                    $admin = new AdminProductController();
+                    $admin->delete_product_image();
+                    break;
+                
+                // Thêm biến thể hàng loạt
+                case "add_variants_bulk":
+                    $admin = new AdminProductController();
+                    $admin->add_variants_bulk();
+                    break;
+                
+                // Thêm 1 biến thể mới
+                case "add_single_variant":
+                    $admin = new AdminProductController();
+                    $admin->add_single_variant();
+                    break;
+                
+                // Xóa biến thể
+                case "delete_variant":
+                    $admin = new AdminProductController();
+                    $admin->delete_variant();
+                    break;
 
                 // Danh mục sản phẩm
                 case "list_categories":
