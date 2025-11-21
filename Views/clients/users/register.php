@@ -35,9 +35,19 @@
                     <span class="icon">✉️</span>
                 </div>
 
-                <div class="input-box">
-                    <input type="password" name="password" placeholder="Mật khẩu">
+                <div class="input-box" style="position: relative;">
+                    <input type="password" name="password" id="password" placeholder="Mật khẩu" required>
                     <span class="icon">🔒</span>
+                    <span class="toggle-password" onclick="togglePassword('password')" style="position: absolute; right: 40px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px;">👁️</span>
+                </div>
+                <small style="display: block; margin: -10px 0 15px 0; color: #666; font-size: 12px;">
+                    Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt
+                </small>
+
+                <div class="input-box" style="position: relative;">
+                    <input type="password" name="confirm_password" id="confirm_password" placeholder="Xác nhận mật khẩu" required>
+                    <span class="icon">🔒</span>
+                    <span class="toggle-password" onclick="togglePassword('confirm_password')" style="position: absolute; right: 40px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px;">👁️</span>
                 </div>
 
                 <div class="input-box">
@@ -55,6 +65,42 @@
 
         </div>
     </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = field.nextElementSibling.nextElementSibling;
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.textContent = '🙈';
+            } else {
+                field.type = 'password';
+                icon.textContent = '👁️';
+            }
+        }
+
+        // Validate form trước khi submit
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            // Kiểm tra mật khẩu khớp
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Mật khẩu và xác nhận mật khẩu không khớp!');
+                return false;
+            }
+            
+            // Kiểm tra độ mạnh mật khẩu
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordRegex.test(password)) {
+                e.preventDefault();
+                alert('Mật khẩu phải có ít nhất 8 ký tự, bao gồm:\n- Chữ hoa (A-Z)\n- Chữ thường (a-z)\n- Số (0-9)\n- Ký tự đặc biệt (@$!%*?&)');
+                return false;
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -78,21 +78,49 @@ class UserController
                 return;
             }
 
-            // 3. Kiểm tra độ dài mật khẩu
-            if (strlen($password) < 6) {
-                $error = "Mật khẩu phải có ít nhất 6 ký tự.";
+            // 3. Kiểm tra xác nhận mật khẩu
+            $confirm_password = $_POST['confirm_password'] ?? '';
+            if ($password !== $confirm_password) {
+                $error = "Mật khẩu và xác nhận mật khẩu không khớp.";
                 include './Views/clients/users/register.php';
                 return;
             }
 
-            // 4. (Tuỳ chọn) Kiểm tra định dạng số điện thoại (chỉ chữ số, 9-15 chữ số)
+            // 4. Kiểm tra độ mạnh mật khẩu (ít nhất 8 ký tự, có chữ hoa, chữ thường, số, ký tự đặc biệt)
+            if (strlen($password) < 8) {
+                $error = "Mật khẩu phải có ít nhất 8 ký tự.";
+                include './Views/clients/users/register.php';
+                return;
+            }
+            if (!preg_match('/[A-Z]/', $password)) {
+                $error = "Mật khẩu phải có ít nhất 1 chữ in hoa.";
+                include './Views/clients/users/register.php';
+                return;
+            }
+            if (!preg_match('/[a-z]/', $password)) {
+                $error = "Mật khẩu phải có ít nhất 1 chữ thường.";
+                include './Views/clients/users/register.php';
+                return;
+            }
+            if (!preg_match('/[0-9]/', $password)) {
+                $error = "Mật khẩu phải có ít nhất 1 chữ số.";
+                include './Views/clients/users/register.php';
+                return;
+            }
+            if (!preg_match('/[@$!%*?&]/', $password)) {
+                $error = "Mật khẩu phải có ít nhất 1 ký tự đặc biệt (@$!%*?&).";
+                include './Views/clients/users/register.php';
+                return;
+            }
+
+            // 5. Kiểm tra định dạng số điện thoại (chỉ chữ số, 10-12 ký tự)
             if (!preg_match('/^0\d{9,11}$/', $phone)) {
                 $error = "Số điện thoại phải bắt đầu bằng số 0 và có độ dài từ 10-12 chữ số";
                 include './Views/clients/users/register.php';
                 return;
             }
 
-            // 5. Kiểm tra email trùng trong DB
+            // 6. Kiểm tra email trùng trong DB
             $userModel = new UserClients();
             if ($userModel->checkEmail($email)) {
                 $error = "Email đã tồn tại. Vui lòng sử dụng email khác!";
@@ -100,7 +128,7 @@ class UserController
                 return;
             }
 
-            // 6. Nếu đến đây là hợp lệ -> lưu vào DB
+            // 7. Nếu đến đây là hợp lệ -> lưu vào DB
             $hashPassword = password_hash($password, PASSWORD_DEFAULT);
             $userModel->addUser($name, $email, $hashPassword, $avatar, $phone, $address);
 
