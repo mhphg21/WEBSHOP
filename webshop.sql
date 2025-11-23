@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.2
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Aug 26, 2025 at 09:12 AM
--- Server version: 8.4.3
--- PHP Version: 8.3.16
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th10 23, 2025 lúc 12:05 PM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,38 +18,38 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `duan1_v2`
+-- Cơ sở dữ liệu: `webshop`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `activity_logs`
+-- Cấu trúc bảng cho bảng `activity_logs`
 --
 
 CREATE TABLE `activity_logs` (
-  `id` bigint NOT NULL COMMENT 'ID log',
-  `admin_id` bigint DEFAULT NULL COMMENT 'ID admin thực hiện',
-  `action` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'Hành động đã thực hiện',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm thực hiện'
+  `id` bigint(20) NOT NULL COMMENT 'ID log',
+  `admin_id` bigint(20) DEFAULT NULL COMMENT 'ID admin thực hiện',
+  `action` text DEFAULT NULL COMMENT 'Hành động đã thực hiện',
+  `created_at` datetime DEFAULT current_timestamp() COMMENT 'Thời điểm thực hiện'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `attributes`
+-- Cấu trúc bảng cho bảng `attributes`
 --
 
 CREATE TABLE `attributes` (
-  `id` int NOT NULL COMMENT 'ID thuộc tính',
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Tên thuộc tính (ví dụ: Màu, Size)',
-  `slug` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Mã định danh duy nhất (dạng viết liền)',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm tạo',
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời điểm cập nhật'
+  `id` int(11) NOT NULL COMMENT 'ID thuộc tính',
+  `name` varchar(100) NOT NULL COMMENT 'Tên thuộc tính (ví dụ: Màu, Size)',
+  `slug` varchar(100) NOT NULL COMMENT 'Mã định danh duy nhất (dạng viết liền)',
+  `created_at` datetime DEFAULT current_timestamp() COMMENT 'Thời điểm tạo',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Thời điểm cập nhật'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `attributes`
+-- Đang đổ dữ liệu cho bảng `attributes`
 --
 
 INSERT INTO `attributes` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALUES
@@ -60,19 +60,19 @@ INSERT INTO `attributes` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALU
 -- --------------------------------------------------------
 
 --
--- Table structure for table `attribute_values`
+-- Cấu trúc bảng cho bảng `attribute_values`
 --
 
 CREATE TABLE `attribute_values` (
-  `id` int NOT NULL COMMENT 'ID giá trị thuộc tính',
-  `attribute_id` int NOT NULL COMMENT 'ID thuộc tính',
-  `value` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Giá trị thuộc tính (ví dụ: Đỏ, 42mm)',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm tạo',
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời điểm cập nhật'
+  `id` int(11) NOT NULL COMMENT 'ID giá trị thuộc tính',
+  `attribute_id` int(11) NOT NULL COMMENT 'ID thuộc tính',
+  `value` varchar(100) NOT NULL COMMENT 'Giá trị thuộc tính (ví dụ: Đỏ, 42mm)',
+  `created_at` datetime DEFAULT current_timestamp() COMMENT 'Thời điểm tạo',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Thời điểm cập nhật'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `attribute_values`
+-- Đang đổ dữ liệu cho bảng `attribute_values`
 --
 
 INSERT INTO `attribute_values` (`id`, `attribute_id`, `value`, `created_at`, `updated_at`) VALUES
@@ -93,85 +93,96 @@ INSERT INTO `attribute_values` (`id`, `attribute_id`, `value`, `created_at`, `up
 -- --------------------------------------------------------
 
 --
--- Table structure for table `banners`
+-- Cấu trúc bảng cho bảng `banners`
 --
 
 CREATE TABLE `banners` (
-  `id` int NOT NULL COMMENT 'ID banner',
-  `category_id` int NOT NULL COMMENT 'id của danh mục',
-  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Đường dẫn ảnh',
-  `link_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Liên kết khi click',
-  `position` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Vị trí hiển thị (home, top, bottom...)',
-  `is_active` tinyint(1) DEFAULT '1' COMMENT 'Trạng thái hiển thị'
+  `id` int(11) NOT NULL COMMENT 'ID banner',
+  `category_id` int(11) NOT NULL COMMENT 'id của danh mục',
+  `image_url` varchar(255) DEFAULT NULL COMMENT 'Đường dẫn ảnh',
+  `link_url` varchar(255) DEFAULT NULL COMMENT 'Liên kết khi click',
+  `position` varchar(50) DEFAULT NULL COMMENT 'Vị trí hiển thị (home, top, bottom...)',
+  `is_active` tinyint(1) DEFAULT 1 COMMENT 'Trạng thái hiển thị'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `banners`
+-- Đang đổ dữ liệu cho bảng `banners`
 --
+
+INSERT INTO `banners` (`id`, `category_id`, `image_url`, `link_url`, `position`, `is_active`) VALUES
+(1, 1, 'slide1.png', NULL, NULL, 1),
+(3, 1, 'slide2.png', NULL, NULL, 1),
+(4, 1, 'slide3.png', NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `blogs`
+-- Cấu trúc bảng cho bảng `blogs`
 --
 
 CREATE TABLE `blogs` (
-  `id` int NOT NULL COMMENT 'ID bài viết',
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Tiêu đề',
-  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'Nội dung',
-  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Ảnh đại diện',
+  `id` int(11) NOT NULL COMMENT 'ID bài viết',
+  `title` varchar(255) DEFAULT NULL COMMENT 'Tiêu đề',
+  `content` text DEFAULT NULL COMMENT 'Nội dung',
+  `image_url` varchar(255) DEFAULT NULL COMMENT 'Ảnh đại diện',
   `published_at` datetime DEFAULT NULL COMMENT 'Thời điểm xuất bản',
-  `author_id` bigint DEFAULT NULL COMMENT 'ID người viết'
+  `author_id` bigint(20) DEFAULT NULL COMMENT 'ID người viết'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `carts`
+-- Cấu trúc bảng cho bảng `carts`
 --
 
 CREATE TABLE `carts` (
-  `id` bigint NOT NULL COMMENT 'ID giỏ hàng',
-  `user_id` bigint NOT NULL COMMENT 'ID người dùng',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm tạo'
+  `id` bigint(20) NOT NULL COMMENT 'ID giỏ hàng',
+  `user_id` bigint(20) NOT NULL COMMENT 'ID người dùng',
+  `created_at` datetime DEFAULT current_timestamp() COMMENT 'Thời điểm tạo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `carts`
+-- Đang đổ dữ liệu cho bảng `carts`
 --
+
+INSERT INTO `carts` (`id`, `user_id`, `created_at`) VALUES
+(14, 16, '2025-11-21 14:36:40');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cart_items`
+-- Cấu trúc bảng cho bảng `cart_items`
 --
 
 CREATE TABLE `cart_items` (
-  `id` bigint NOT NULL COMMENT 'ID chi tiết giỏ hàng',
-  `cart_id` bigint NOT NULL COMMENT 'ID giỏ hàng',
-  `product_variant_id` bigint NOT NULL COMMENT 'ID biến thể sản phẩm',
-  `quantity` int NOT NULL DEFAULT '1' COMMENT 'Số lượng mua'
+  `id` bigint(20) NOT NULL COMMENT 'ID chi tiết giỏ hàng',
+  `cart_id` bigint(20) NOT NULL COMMENT 'ID giỏ hàng',
+  `product_variant_id` bigint(20) NOT NULL COMMENT 'ID biến thể sản phẩm',
+  `quantity` int(11) NOT NULL DEFAULT 1 COMMENT 'Số lượng mua'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `cart_items`
+-- Đang đổ dữ liệu cho bảng `cart_items`
 --
+
+INSERT INTO `cart_items` (`id`, `cart_id`, `product_variant_id`, `quantity`) VALUES
+(114, 14, 130, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categories`
+-- Cấu trúc bảng cho bảng `categories`
 --
 
 CREATE TABLE `categories` (
-  `id` int NOT NULL COMMENT 'ID danh mục',
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Tên danh mục',
-  `parent_id` int DEFAULT NULL COMMENT 'ID danh mục cha (nếu có)',
-  `sort_order` int DEFAULT '0' COMMENT 'Thứ tự hiển thị'
+  `id` int(11) NOT NULL COMMENT 'ID danh mục',
+  `name` varchar(100) NOT NULL COMMENT 'Tên danh mục',
+  `parent_id` int(11) DEFAULT NULL COMMENT 'ID danh mục cha (nếu có)',
+  `sort_order` int(11) DEFAULT 0 COMMENT 'Thứ tự hiển thị'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `categories`
+-- Đang đổ dữ liệu cho bảng `categories`
 --
 
 INSERT INTO `categories` (`id`, `name`, `parent_id`, `sort_order`) VALUES
@@ -184,136 +195,137 @@ INSERT INTO `categories` (`id`, `name`, `parent_id`, `sort_order`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `coupons`
+-- Cấu trúc bảng cho bảng `coupons`
 --
 
 CREATE TABLE `coupons` (
-  `id` int NOT NULL COMMENT 'ID mã giảm giá',
-  `code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Mã code',
-  `discount_type` enum('percent','fixed') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Kiểu giảm: phần trăm hoặc số tiền cố định',
+  `id` int(11) NOT NULL COMMENT 'ID mã giảm giá',
+  `code` varchar(50) NOT NULL COMMENT 'Mã code',
+  `discount_type` enum('percent','fixed') NOT NULL COMMENT 'Kiểu giảm: phần trăm hoặc số tiền cố định',
   `discount_value` decimal(10,2) NOT NULL COMMENT 'Giá trị giảm',
   `min_order_value` decimal(10,2) DEFAULT NULL COMMENT 'Giá trị đơn hàng tối thiểu',
-  `usage_limit` int DEFAULT NULL COMMENT 'Số lần sử dụng tối đa',
-  `used_count` int DEFAULT '0' COMMENT 'Số lần đã sử dụng',
+  `usage_limit` int(11) DEFAULT NULL COMMENT 'Số lần sử dụng tối đa',
+  `used_count` int(11) DEFAULT 0 COMMENT 'Số lần đã sử dụng',
   `start_date` date DEFAULT NULL COMMENT 'Ngày bắt đầu hiệu lực',
   `end_date` date DEFAULT NULL COMMENT 'Ngày hết hạn',
-  `status` enum('pending','active','expired') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Trạng thái coupons'
+  `status` enum('pending','active','expired') DEFAULT NULL COMMENT 'Trạng thái coupons'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `coupons`
---
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `notifications`
+-- Cấu trúc bảng cho bảng `notifications`
 --
 
 CREATE TABLE `notifications` (
-  `id` bigint NOT NULL COMMENT 'ID thông báo',
-  `user_id` bigint DEFAULT NULL COMMENT 'ID người nhận thông báo',
-  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'Nội dung thông báo',
-  `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Loại thông báo (đơn hàng, hệ thống...)',
-  `is_read` tinyint(1) DEFAULT '0' COMMENT 'Đã đọc hay chưa',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm gửi thông báo'
+  `id` bigint(20) NOT NULL COMMENT 'ID thông báo',
+  `user_id` bigint(20) DEFAULT NULL COMMENT 'ID người nhận thông báo',
+  `message` text DEFAULT NULL COMMENT 'Nội dung thông báo',
+  `type` varchar(50) DEFAULT NULL COMMENT 'Loại thông báo (đơn hàng, hệ thống...)',
+  `is_read` tinyint(1) DEFAULT 0 COMMENT 'Đã đọc hay chưa',
+  `created_at` datetime DEFAULT current_timestamp() COMMENT 'Thời điểm gửi thông báo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `notifications`
---
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `orders`
+-- Cấu trúc bảng cho bảng `orders`
 --
 
 CREATE TABLE `orders` (
-  `id` bigint NOT NULL COMMENT 'ID đơn hàng',
-  `coupon_id` int DEFAULT NULL COMMENT 'id coupons',
-  `user_id` bigint NOT NULL COMMENT 'ID người dùng đặt hàng',
-  `email_order` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Email người nhận',
-  `phone_order` int NOT NULL COMMENT 'số điện thoại người nhận',
-  `name_order` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Tên người nhận',
+  `id` bigint(20) NOT NULL COMMENT 'ID đơn hàng',
+  `coupon_id` int(11) DEFAULT NULL COMMENT 'id coupons',
+  `user_id` bigint(20) NOT NULL COMMENT 'ID người dùng đặt hàng',
+  `email_order` varchar(255) NOT NULL COMMENT 'Email người nhận',
+  `phone_order` int(11) NOT NULL COMMENT 'số điện thoại người nhận',
+  `name_order` varchar(255) NOT NULL COMMENT 'Tên người nhận',
   `total_price` decimal(10,2) NOT NULL COMMENT 'Tổng giá trị đơn hàng',
-  `shipping_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'Địa chỉ giao hàng',
-  `payment_method` enum('COD','Bank Transfer') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Phương thức thanh toán',
-  `status` enum('processing','shipping','delivered','cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'processing' COMMENT 'Trạng thái đơn hàng',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm tạo',
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời điểm cập nhật'
+  `shipping_address` text DEFAULT NULL COMMENT 'Địa chỉ giao hàng',
+  `payment_method` enum('COD','Bank Transfer') NOT NULL COMMENT 'Phương thức thanh toán',
+  `status` enum('processing','shipping','delivered','cancelled') DEFAULT 'processing' COMMENT 'Trạng thái đơn hàng',
+  `created_at` datetime DEFAULT current_timestamp() COMMENT 'Thời điểm tạo',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Thời điểm cập nhật'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `orders`
+-- Đang đổ dữ liệu cho bảng `orders`
 --
+
+INSERT INTO `orders` (`id`, `coupon_id`, `user_id`, `email_order`, `phone_order`, `name_order`, `total_price`, `shipping_address`, `payment_method`, `status`, `created_at`, `updated_at`) VALUES
+(72, NULL, 16, 'ducvu159753@gmail.com', 234567891, 'duc', 299000.00, '117/15/1 Trần Cung', 'COD', 'processing', '2025-11-21 14:37:00', '2025-11-21 14:37:00');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `order_details`
+-- Cấu trúc bảng cho bảng `order_details`
 --
 
 CREATE TABLE `order_details` (
-  `id` bigint NOT NULL COMMENT 'ID chi tiết đơn hàng',
-  `order_id` bigint NOT NULL COMMENT 'ID đơn hàng',
-  `product_variant_id` bigint NOT NULL COMMENT 'ID biến thể sản phẩm',
-  `quantity` int NOT NULL COMMENT 'Số lượng',
+  `id` bigint(20) NOT NULL COMMENT 'ID chi tiết đơn hàng',
+  `order_id` bigint(20) NOT NULL COMMENT 'ID đơn hàng',
+  `product_variant_id` bigint(20) NOT NULL COMMENT 'ID biến thể sản phẩm',
+  `quantity` int(11) NOT NULL COMMENT 'Số lượng',
   `price` decimal(10,2) NOT NULL COMMENT 'Giá tại thời điểm mua'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `order_details`
+-- Đang đổ dữ liệu cho bảng `order_details`
 --
+
+INSERT INTO `order_details` (`id`, `order_id`, `product_variant_id`, `quantity`, `price`) VALUES
+(93, 72, 119, 1, 299000.00);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `payments`
+-- Cấu trúc bảng cho bảng `payments`
 --
 
 CREATE TABLE `payments` (
-  `id` bigint NOT NULL COMMENT 'ID thanh toán',
-  `order_id` bigint NOT NULL COMMENT 'ID đơn hàng liên quan',
-  `payment_status` enum('pending','paid','failed') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'pending' COMMENT 'Trạng thái thanh toán',
-  `payment_gateway` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Cổng thanh toán sử dụng',
-  `transaction_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Mã giao dịch',
+  `id` bigint(20) NOT NULL COMMENT 'ID thanh toán',
+  `order_id` bigint(20) NOT NULL COMMENT 'ID đơn hàng liên quan',
+  `payment_status` enum('pending','paid','failed') DEFAULT 'pending' COMMENT 'Trạng thái thanh toán',
+  `payment_gateway` varchar(50) DEFAULT NULL COMMENT 'Cổng thanh toán sử dụng',
+  `transaction_id` varchar(100) DEFAULT NULL COMMENT 'Mã giao dịch',
   `paid_at` datetime DEFAULT NULL COMMENT 'Thời gian thanh toán'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `payments`
+-- Đang đổ dữ liệu cho bảng `payments`
 --
+
+INSERT INTO `payments` (`id`, `order_id`, `payment_status`, `payment_gateway`, `transaction_id`, `paid_at`) VALUES
+(34, 72, 'pending', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `products`
+-- Cấu trúc bảng cho bảng `products`
 --
 
 CREATE TABLE `products` (
-  `id` bigint NOT NULL COMMENT 'ID sản phẩm',
-  `category_id` int NOT NULL COMMENT 'ID danh mục',
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Tên sản phẩm',
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'Mô tả sản phẩm',
-  `thumbnail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ảnh chính sản phẩm',
+  `id` bigint(20) NOT NULL COMMENT 'ID sản phẩm',
+  `category_id` int(11) NOT NULL COMMENT 'ID danh mục',
+  `name` varchar(255) NOT NULL COMMENT 'Tên sản phẩm',
+  `description` text DEFAULT NULL COMMENT 'Mô tả sản phẩm',
+  `thumbnail` varchar(255) NOT NULL COMMENT 'ảnh chính sản phẩm',
   `price` decimal(10,0) NOT NULL,
   `sale_price` decimal(10,0) NOT NULL,
-  `status` enum('active','inactive') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'active' COMMENT 'Trạng thái hiển thị',
-  `is_new` tinyint(1) DEFAULT '0' COMMENT 'Đánh dấu sản phẩm mới',
-  `is_hot` tinyint(1) DEFAULT '0' COMMENT 'Sản phẩm nổi bật',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm tạo',
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời điểm cập nhật'
+  `status` enum('active','inactive') DEFAULT 'active' COMMENT 'Trạng thái hiển thị',
+  `is_new` tinyint(1) DEFAULT 0 COMMENT 'Đánh dấu sản phẩm mới',
+  `is_hot` tinyint(1) DEFAULT 0 COMMENT 'Sản phẩm nổi bật',
+  `created_at` datetime DEFAULT current_timestamp() COMMENT 'Thời điểm tạo',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Thời điểm cập nhật'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `products`
+-- Đang đổ dữ liệu cho bảng `products`
 --
 
 INSERT INTO `products` (`id`, `category_id`, `name`, `description`, `thumbnail`, `price`, `sale_price`, `status`, `is_new`, `is_hot`, `created_at`, `updated_at`) VALUES
-(39, 1, 'Áo polo nam basic', 'Áo polo nam basic có cổ bẻ, nẹp cài cúc thiết kế vát chéo có in sọc, kiểu dáng đơn giản phù hợp với nhiều hoàn cảnh sử dụng.', '1754561783_68947cf78d8f9.webp', 449000, 314300, 'active', 1, 0, '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
-(45, 1, 'Áo phông người lớn Độc Lập - Tự do - Hạnh phúc', 'Áo phông phong cách typo truyền tải thông điệp tinh thần dân tộc và tình yêu quê hương đất nước. Ba từ khóa “Độc Lập – Tự Do – Hạnh Phúc” được thể hiện bằng typography mạnh mẽ, gọn gàng, hiện đại, tạo điểm nhấn đầy ấn tượng. Là một sản phẩm kết nối các thế hệ trong gia đình Việt Nam hiện đại, cùng chung tinh thần tự hào về quê hương, đất nước.', '1755339889_68a05c71b44ff.webp', 359000, 299000, 'active', 1, 0, '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
-(46, 1, 'Áo phông người lớn Ngôi sao Việt Nam', 'Áo phông unisex người lớn Canifa S Kết nối tự hào dáng boxy.\r\nNhững chiếc áo mang sắc đỏ, vàng cùng dòng chữ “Việt Nam” nhằm lan tỏa tình yêu quê hương đất nước, niềm tự hào dân tộc. Các thiết kế hướng tới sự năng động, sáng tạo và thời trang để mọi người dễ dàng kết hợp cùng các sản phẩm khác trong đa dạng hoàn cảnh sử dụng.', '1755340178_68a05d92684cf.webp', 339000, 299000, 'active', 1, 0, '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
+(39, 1, 'Áo polo nam basic', 'Áo polo nam basic có cổ bẻ, nẹp cài cúc thiết kế vát chéo có in sọc, kiểu dáng đơn giản phù hợp với nhiều hoàn cảnh sử dụng.', '1763719576_1754561783_68947cf79d225.webp', 449000, 314300, 'active', 1, 1, '2025-10-09 23:37:42', '2025-11-21 17:06:16'),
+(45, 1, 'Áo phông người lớn Độc Lập - Tự do - Hạnh phúc', 'Áo phông phong cách typo truyền tải thông điệp tinh thần dân tộc và tình yêu quê hương đất nước. Ba từ khóa “Độc Lập – Tự Do – Hạnh Phúc” được thể hiện bằng typography mạnh mẽ, gọn gàng, hiện đại, tạo điểm nhấn đầy ấn tượng. Là một sản phẩm kết nối các thế hệ trong gia đình Việt Nam hiện đại, cùng chung tinh thần tự hào về quê hương, đất nước.', '1763719609_1755339889_68a05c71b9986.webp', 359000, 299000, 'active', 1, 1, '2025-10-09 23:37:42', '2025-11-21 17:06:49'),
+(46, 1, 'Áo phông người lớn Ngôi sao Việt Nam', 'Áo phông unisex người lớn Canifa S Kết nối tự hào dáng boxy.\r\nNhững chiếc áo mang sắc đỏ, vàng cùng dòng chữ “Việt Nam” nhằm lan tỏa tình yêu quê hương đất nước, niềm tự hào dân tộc. Các thiết kế hướng tới sự năng động, sáng tạo và thời trang để mọi người dễ dàng kết hợp cùng các sản phẩm khác trong đa dạng hoàn cảnh sử dụng.', '1755340178_68a05d92684cf.webp', 339000, 299000, 'active', 1, 1, '2025-10-09 23:37:42', '2025-11-21 17:06:56'),
 (47, 1, 'Quần âu nam Slimfit có chun', 'Quần âu nam cạp lót họa tiết, form dáng mặc vừa với cơ thể. Cạp quần có thiết kế chi tiết chun tăng giảm đặc biệt phù hợp cho nhiều dáng cơ thể bụng nhỏ, bụng vừa, bụng to tạo tính thẩm mỹ, thiết kế cao. Chất liệu đứng form, có độ bền cao, dễ phối đồ.', '1755340528_68a05ef08f523.webp', 849000, 699000, 'active', 1, 0, '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
 (48, 2, 'Áo phông nữ cổ tròn dáng suông', 'Áo T-shirt nữ giá tốt cổ tròn', '1755340992_68a060c0ade01.webp', 149000, 79000, 'active', 1, 0, '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
 (49, 2, 'Áo len ghi lê nữ cổ tim dệt kiểu', 'Áo len ghi lê, dáng áo rộng vừa, chất liệu dệt len mềm mại, ấm áp. Hoàn cảnh sử dụng linh hoạt.', '1755341340_68a0621c27ced.webp', 500000, 399000, 'active', 1, 0, '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
@@ -324,29 +336,30 @@ INSERT INTO `products` (`id`, `category_id`, `name`, `description`, `thumbnail`,
 (54, 4, 'Áo phông unisex trẻ em Cờ đỏ sao vàng', 'Áo phông mang biểu tượng ngôi sao vàng năm cánh của quốc kỳ Việt Nam, tượng trưng cho tinh thần đoàn kết và sức mạnh dân tộc. Chiếc áo quen thuộc nhưng được hoàn thiện chỉnh chu về phom dáng, đề cao chất lượng sản phẩm, là một biểu tượng kết nối các thế hệ trong gia đình Việt Nam hiện đại, cùng chung tinh thần dân tộc, cùng tự hào khoác lên mình màu cờ tổ quốc.', '1755342570_68a066ea2cfff.webp', 200000, 169000, 'active', 1, 0, '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
 (55, 5, 'Áo sơ mi bé trai đính patch trang trí', 'Áo sơ mi phom basic, chất liệu cotton phom dáng cơ bản, đính patch ngực phù hợp cho các bé sử dụng trong nhiều hoàn cảnh.', '1755342756_68a067a4e87e8.webp', 333000, 299000, 'active', 1, 0, '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
 (56, 4, 'Quần soóc bé gái cạp chun dáng thể thao', 'Quần soóc bé gái phong cách thể thao, chất liệu cotton pha mềm mại đứng form, kiểu dáng khỏe khoắn năng động phù hợp với nhiều hoàn cảnh sử dụng,', '1755697668_68a5d2049c3e2.webp', 320000, 149000, 'active', 1, 0, '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
-(57, 1, 'Áo sát nách bé gái cotton USA tay cánh tiên', 'Áo thun sát nách bé gái in tự do nữ tính tạo cảm giác điệu đà cho các con, chất liệu cotton thoáng mát, tay cánh tiên điệu đà.', '1755702698_68a5e5aac5066.webp', 169000, 79000, 'active', 1, 0, '2025-10-09 23:37:42', '2025-10-09 23:37:42');
+(57, 1, 'Áo sát nách bé gái cotton USA tay cánh tiên', 'Áo thun sát nách bé gái in tự do nữ tính tạo cảm giác điệu đà cho các con, chất liệu cotton thoáng mát, tay cánh tiên điệu đà.', '1755702698_68a5e5aac5066.webp', 169000, 79000, 'active', 1, 0, '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
+(58, 2, 'Bộ nỉ nữ WBD001W4 dáng suông rộng', 'abcd', '1763719552_anhdaidien.jpg', 501000, 400000, 'active', 1, 1, '2025-11-21 15:23:28', '2025-11-21 17:05:52');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `product_variants`
+-- Cấu trúc bảng cho bảng `product_variants`
 --
 
 CREATE TABLE `product_variants` (
-  `id` bigint NOT NULL COMMENT 'ID biến thể',
-  `product_id` bigint NOT NULL COMMENT 'ID sản phẩm gốc',
-  `is_hot` enum('0','1') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `sku` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Mã SKU',
+  `id` bigint(20) NOT NULL COMMENT 'ID biến thể',
+  `product_id` bigint(20) NOT NULL COMMENT 'ID sản phẩm gốc',
+  `is_hot` enum('0','1') NOT NULL,
+  `sku` varchar(100) DEFAULT NULL COMMENT 'Mã SKU',
   `price` decimal(10,2) NOT NULL COMMENT 'Giá bán',
   `sale_price` decimal(10,2) DEFAULT NULL COMMENT 'Giá khuyến mãi',
-  `stock_quantity` int DEFAULT '0' COMMENT 'Số lượng tồn kho',
-  `status` enum('active','hidden','out_of_stock') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'active' COMMENT 'Trạng thái biến thể',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm tạo',
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời điểm cập nhật'
+  `stock_quantity` int(11) DEFAULT 0 COMMENT 'Số lượng tồn kho',
+  `status` enum('active','hidden','out_of_stock') DEFAULT 'active' COMMENT 'Trạng thái biến thể',
+  `created_at` datetime DEFAULT current_timestamp() COMMENT 'Thời điểm tạo',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Thời điểm cập nhật'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `product_variants`
+-- Đang đổ dữ liệu cho bảng `product_variants`
 --
 
 INSERT INTO `product_variants` (`id`, `product_id`, `is_hot`, `sku`, `price`, `sale_price`, `stock_quantity`, `status`, `created_at`, `updated_at`) VALUES
@@ -415,7 +428,7 @@ INSERT INTO `product_variants` (`id`, `product_id`, `is_hot`, `sku`, `price`, `s
 (116, 54, '0', 'GPHSVDM', 200000.00, 169000.00, 12, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
 (117, 54, '0', 'GPHSVDL', 200000.00, 169000.00, 11, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
 (118, 54, '0', 'GPHSVDXL', 200000.00, 169000.00, 44, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
-(119, 55, '0', 'SSMBM', 333000.00, 299000.00, 43, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
+(119, 55, '0', 'SSMBM', 333000.00, 299000.00, 42, 'active', '2025-10-09 23:37:42', '2025-11-21 14:37:00'),
 (120, 55, '0', 'SSMBL', 333000.00, 299000.00, 66, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
 (121, 56, '0', 'QS1', 279000.00, 145000.00, 12, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
 (122, 56, '0', 'QS2', 279000.00, 145000.00, 22, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
@@ -425,25 +438,36 @@ INSERT INTO `product_variants` (`id`, `product_id`, `is_hot`, `sku`, `price`, `s
 (126, 56, '0', 'QS6', 279000.00, 145000.00, 22, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
 (127, 57, '0', 'SS1', 150000.00, 70000.00, 111, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
 (128, 57, '0', 'FF2', 150000.00, 70000.00, 111, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
-(129, 57, '0', 'FF5', 150000.00, 70000.00, 111, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42');
+(129, 57, '0', 'FF5', 150000.00, 70000.00, 111, 'active', '2025-10-09 23:37:42', '2025-10-09 23:37:42'),
+(130, 58, '0', 'X1', 501000.00, 400000.00, 100, 'active', '2025-11-21 15:23:28', '2025-11-21 15:24:14'),
+(131, 58, '0', 'X2', 501000.00, 400000.00, 21, 'active', '2025-11-21 15:23:28', '2025-11-21 15:39:13'),
+(132, 58, '0', 'X3', 501000.00, 400000.00, 34, 'active', '2025-11-21 15:23:28', '2025-11-21 15:39:41'),
+(133, 58, '0', 'T1', 501000.00, 400000.00, 11, 'active', '2025-11-21 15:23:28', '2025-11-21 16:54:32'),
+(134, 58, '0', 'T2', 501000.00, 400000.00, 1, 'active', '2025-11-21 15:23:28', '2025-11-21 16:09:05'),
+(135, 58, '0', 'T3', 501000.00, 400000.00, 5, 'active', '2025-11-21 15:23:28', '2025-11-21 16:16:57'),
+(136, 58, '0', 'ĐEM944', 501000.00, 400000.00, 51, 'active', '2025-11-21 16:21:13', '2025-11-21 16:56:12'),
+(137, 58, '0', 'ĐEL115', 501000.00, 400000.00, 0, 'out_of_stock', '2025-11-21 16:21:13', '2025-11-21 16:38:03'),
+(138, 58, '0', 'PRO58-C13-S5', 501000.00, 400000.00, 0, 'active', '2025-11-21 16:23:43', '2025-11-21 16:23:43'),
+(139, 58, '0', 'PRO58-C13-S4', 501000.00, 400000.00, 1, 'active', '2025-11-21 16:23:43', '2025-11-21 16:52:33'),
+(140, 58, '0', 'PRO58-C13-S6', 501000.00, 400000.00, 0, 'active', '2025-11-21 16:23:43', '2025-11-21 16:23:43');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `product_variant_images`
+-- Cấu trúc bảng cho bảng `product_variant_images`
 --
 
 CREATE TABLE `product_variant_images` (
-  `id` bigint NOT NULL COMMENT 'ID ảnh',
-  `product_id` bigint NOT NULL,
-  `color_id` int NOT NULL,
-  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'URL ảnh',
-  `is_primary` tinyint(1) DEFAULT '0' COMMENT 'Là ảnh chính hay không',
-  `path` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'đường dẫn ảnh'
+  `id` bigint(20) NOT NULL COMMENT 'ID ảnh',
+  `product_id` bigint(20) NOT NULL,
+  `color_id` int(11) NOT NULL,
+  `image_url` varchar(255) DEFAULT NULL COMMENT 'URL ảnh',
+  `is_primary` tinyint(1) DEFAULT 0 COMMENT 'Là ảnh chính hay không',
+  `path` varchar(250) NOT NULL COMMENT 'đường dẫn ảnh'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `product_variant_images`
+-- Đang đổ dữ liệu cho bảng `product_variant_images`
 --
 
 INSERT INTO `product_variant_images` (`id`, `product_id`, `color_id`, `image_url`, `is_primary`, `path`) VALUES
@@ -600,92 +624,114 @@ INSERT INTO `product_variant_images` (`id`, `product_id`, `color_id`, `image_url
 (227, 57, 10, '1755702699_68a5e5ab22262.webp', 1, './Public/Img/uploads/'),
 (228, 57, 10, '1755702699_68a5e5ab27f85.webp', 2, './Public/Img/uploads/'),
 (229, 57, 10, '1755702699_68a5e5ab2aeb2.webp', 2, './Public/Img/uploads/'),
-(230, 57, 10, '1755702699_68a5e5ab34e2c.webp', 2, './Public/Img/uploads/');
+(230, 57, 10, '1755702699_68a5e5ab34e2c.webp', 2, './Public/Img/uploads/'),
+(232, 58, 10, '1763713408_692021808abde.jpg', 1, './Public/Img/uploads/'),
+(233, 58, 2, '1763713408_692021808e7f1.jpg', 2, './Public/Img/uploads/'),
+(234, 58, 10, '1763713408_69202180920de.jpg', 2, './Public/Img/uploads/'),
+(235, 58, 2, '1763716594_69202df27d68e.jpg', 1, './Public/Img/uploads/'),
+(237, 58, 3, '1763716751_69202e8f707f7.jpg', 1, './Public/Img/uploads/'),
+(238, 58, 3, '1763716751_69202e8f71152.jpg', 2, './Public/Img/uploads/'),
+(239, 58, 3, '1763716751_69202e8f718e3.jpg', 2, './Public/Img/uploads/'),
+(240, 58, 3, '1763716751_69202e8f7698c.jpg', 2, './Public/Img/uploads/'),
+(242, 58, 3, '1763716751_69202e8f7e75e.jpg', 2, './Public/Img/uploads/'),
+(243, 58, 13, '1763717023_69202f9f44455.jpg', 1, './Public/Img/uploads/'),
+(244, 58, 13, '1763717023_69202f9f4906e.jpg', 2, './Public/Img/uploads/');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `refunds`
+-- Cấu trúc bảng cho bảng `refunds`
 --
 
 CREATE TABLE `refunds` (
-  `id` bigint NOT NULL COMMENT 'ID hoàn tiền',
-  `payment_id` bigint NOT NULL COMMENT 'ID thanh toán liên quan',
-  `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'Lý do hoàn tiền',
-  `status` enum('requested','approved','rejected') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'requested' COMMENT 'Trạng thái hoàn tiền',
+  `id` bigint(20) NOT NULL COMMENT 'ID hoàn tiền',
+  `payment_id` bigint(20) NOT NULL COMMENT 'ID thanh toán liên quan',
+  `reason` text DEFAULT NULL COMMENT 'Lý do hoàn tiền',
+  `status` enum('requested','approved','rejected') DEFAULT 'requested' COMMENT 'Trạng thái hoàn tiền',
   `refunded_at` datetime DEFAULT NULL COMMENT 'Thời gian hoàn tiền'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `reviews`
+-- Cấu trúc bảng cho bảng `reviews`
 --
 
 CREATE TABLE `reviews` (
-  `id` bigint NOT NULL COMMENT 'ID đánh giá',
-  `product_id` bigint NOT NULL COMMENT 'ID sản phẩm',
-  `user_id` bigint NOT NULL COMMENT 'ID người đánh giá',
-  `rating` int NOT NULL COMMENT 'Điểm đánh giá từ 1 đến 5',
-  `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'Nội dung đánh giá',
-  `status` enum('visible','hidden') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'visible' COMMENT 'Trạng thái hiển thị',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm đánh giá'
+  `id` bigint(20) NOT NULL COMMENT 'ID đánh giá',
+  `product_id` bigint(20) NOT NULL COMMENT 'ID sản phẩm',
+  `user_id` bigint(20) NOT NULL COMMENT 'ID người đánh giá',
+  `rating` int(11) NOT NULL COMMENT 'Điểm đánh giá từ 1 đến 5',
+  `comment` text DEFAULT NULL COMMENT 'Nội dung đánh giá',
+  `status` enum('visible','hidden') DEFAULT 'visible' COMMENT 'Trạng thái hiển thị',
+  `created_at` datetime DEFAULT current_timestamp() COMMENT 'Thời điểm đánh giá'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `roles`
+-- Cấu trúc bảng cho bảng `roles`
 --
 
 CREATE TABLE `roles` (
-  `id` int NOT NULL,
-  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Tên vai trò'
+  `id` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL COMMENT 'Tên vai trò'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `roles`
+-- Đang đổ dữ liệu cho bảng `roles`
 --
+
+INSERT INTO `roles` (`id`, `name`) VALUES
+(2, 'admins'),
+(3, 'customers'),
+(1, 'super admins');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Cấu trúc bảng cho bảng `users`
 --
 
 CREATE TABLE `users` (
-  `id` bigint NOT NULL COMMENT 'ID người dùng',
-  `role_id` int NOT NULL COMMENT 'ID vai trò của người dùng',
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Tên người dùng',
-  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Email đăng nhập',
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Mật khẩu đã mã hóa',
-  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Đường dẫn ảnh đại diện',
-  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Số điện thoại',
-  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'Địa chỉ liên hệ',
-  `status` enum('active','inactive','banned') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'active' COMMENT 'Trạng thái tài khoản',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm tạo tài khoản',
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời điểm cập nhật'
+  `id` bigint(20) NOT NULL COMMENT 'ID người dùng',
+  `role_id` int(11) NOT NULL COMMENT 'ID vai trò của người dùng',
+  `name` varchar(100) DEFAULT NULL COMMENT 'Tên người dùng',
+  `email` varchar(100) NOT NULL COMMENT 'Email đăng nhập',
+  `password` varchar(255) NOT NULL COMMENT 'Mật khẩu đã mã hóa',
+  `avatar` varchar(255) DEFAULT NULL COMMENT 'Đường dẫn ảnh đại diện',
+  `phone` varchar(20) DEFAULT NULL COMMENT 'Số điện thoại',
+  `address` text DEFAULT NULL COMMENT 'Địa chỉ liên hệ',
+  `status` enum('active','inactive','banned') DEFAULT 'active' COMMENT 'Trạng thái tài khoản',
+  `created_at` datetime DEFAULT current_timestamp() COMMENT 'Thời điểm tạo tài khoản',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Thời điểm cập nhật'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Đang đổ dữ liệu cho bảng `users`
 --
+
+INSERT INTO `users` (`id`, `role_id`, `name`, `email`, `password`, `avatar`, `phone`, `address`, `status`, `created_at`, `updated_at`) VALUES
+(15, 2, 'Vũ Minh Phương', 'vumphuong2109@gmail.com', '$2y$10$dAIwDzi4i7u8whqR7XBUoeSFUeEGPMxI3DNwU.K07KmEU68fEyGOy', '', '0234567891', '117/15/1 Trần Cung', 'active', '2025-11-21 14:33:52', '2025-11-21 14:34:51'),
+(16, 3, 'duc', 'ducvu159753@gmail.com', '$2y$10$whrvVjczh0I2CXrgifRNz.MHX0Q87on5np8s7pVSGdz8gLA2VbAaq', '', '0234567891', '117/15/1 Trần Cung', 'active', '2025-11-21 14:34:25', '2025-11-21 14:34:25'),
+(17, 3, 'duc', 'd@gmail.com', '$2y$10$28I1Hw/pOhpQfpCQsPX10.gffSDKx97thSpMrR/EEr3pkAiKkFFgS', '', '0123456799', '117/15/1 Trần Cung', 'active', '2025-11-21 18:15:43', '2025-11-21 18:19:57'),
+(18, 3, 'duc', 'ducvu159@gmail.com', '$2y$10$Tekcg3rmsQs7zcxH91Pe9e3nD9HDeIEuOTuUVkUcgd8y.exXcWHs2', '', '0234567891', '117/15/1 Trần Cung', 'active', '2025-11-21 20:22:25', '2025-11-21 20:22:25');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `variant_attribute_values`
+-- Cấu trúc bảng cho bảng `variant_attribute_values`
 --
 
 CREATE TABLE `variant_attribute_values` (
-  `id` int NOT NULL COMMENT 'ID liên kết',
-  `product_variant_id` bigint NOT NULL COMMENT 'ID biến thể',
-  `attribute_id` int NOT NULL COMMENT 'ID thuộc tính',
-  `attribute_value_id` int NOT NULL COMMENT 'ID giá trị thuộc tính'
+  `id` int(11) NOT NULL COMMENT 'ID liên kết',
+  `product_variant_id` bigint(20) NOT NULL COMMENT 'ID biến thể',
+  `attribute_id` int(11) NOT NULL COMMENT 'ID thuộc tính',
+  `attribute_value_id` int(11) NOT NULL COMMENT 'ID giá trị thuộc tính'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `variant_attribute_values`
+-- Đang đổ dữ liệu cho bảng `variant_attribute_values`
 --
 
 INSERT INTO `variant_attribute_values` (`id`, `product_variant_id`, `attribute_id`, `attribute_value_id`) VALUES
@@ -916,56 +962,89 @@ INSERT INTO `variant_attribute_values` (`id`, `product_variant_id`, `attribute_i
 (365, 128, 3, 8),
 (366, 129, 1, 10),
 (367, 129, 2, 5),
-(368, 129, 3, 8);
+(368, 129, 3, 8),
+(369, 130, 1, 2),
+(370, 130, 2, 4),
+(371, 130, 3, 8),
+(372, 131, 1, 2),
+(373, 131, 2, 5),
+(374, 131, 3, 8),
+(375, 132, 1, 2),
+(376, 132, 2, 6),
+(377, 132, 3, 8),
+(378, 133, 1, 10),
+(379, 133, 2, 4),
+(380, 133, 3, 8),
+(381, 134, 1, 10),
+(382, 134, 2, 5),
+(383, 134, 3, 8),
+(384, 135, 1, 10),
+(385, 135, 2, 6),
+(386, 135, 3, 8),
+(387, 136, 1, 3),
+(388, 136, 2, 4),
+(389, 136, 3, 8),
+(390, 137, 1, 3),
+(391, 137, 2, 5),
+(392, 137, 3, 8),
+(393, 138, 1, 13),
+(394, 138, 2, 5),
+(395, 138, 3, 8),
+(396, 139, 1, 13),
+(397, 139, 2, 4),
+(398, 139, 3, 8),
+(399, 140, 1, 13),
+(400, 140, 2, 6),
+(401, 140, 3, 8);
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `activity_logs`
+-- Chỉ mục cho bảng `activity_logs`
 --
 ALTER TABLE `activity_logs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `admin_id` (`admin_id`);
 
 --
--- Indexes for table `attributes`
+-- Chỉ mục cho bảng `attributes`
 --
 ALTER TABLE `attributes`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `slug` (`slug`);
 
 --
--- Indexes for table `attribute_values`
+-- Chỉ mục cho bảng `attribute_values`
 --
 ALTER TABLE `attribute_values`
   ADD PRIMARY KEY (`id`),
   ADD KEY `attribute_id` (`attribute_id`);
 
 --
--- Indexes for table `banners`
+-- Chỉ mục cho bảng `banners`
 --
 ALTER TABLE `banners`
   ADD PRIMARY KEY (`id`),
   ADD KEY `category_id` (`category_id`);
 
 --
--- Indexes for table `blogs`
+-- Chỉ mục cho bảng `blogs`
 --
 ALTER TABLE `blogs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `author_id` (`author_id`);
 
 --
--- Indexes for table `carts`
+-- Chỉ mục cho bảng `carts`
 --
 ALTER TABLE `carts`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `cart_items`
+-- Chỉ mục cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
   ADD PRIMARY KEY (`id`),
@@ -973,28 +1052,28 @@ ALTER TABLE `cart_items`
   ADD KEY `product_variant_id` (`product_variant_id`);
 
 --
--- Indexes for table `categories`
+-- Chỉ mục cho bảng `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`),
   ADD KEY `parent_id` (`parent_id`);
 
 --
--- Indexes for table `coupons`
+-- Chỉ mục cho bảng `coupons`
 --
 ALTER TABLE `coupons`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `code` (`code`);
 
 --
--- Indexes for table `notifications`
+-- Chỉ mục cho bảng `notifications`
 --
 ALTER TABLE `notifications`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `orders`
+-- Chỉ mục cho bảng `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
@@ -1002,7 +1081,7 @@ ALTER TABLE `orders`
   ADD KEY `coupon_id` (`coupon_id`);
 
 --
--- Indexes for table `order_details`
+-- Chỉ mục cho bảng `order_details`
 --
 ALTER TABLE `order_details`
   ADD PRIMARY KEY (`id`),
@@ -1010,21 +1089,21 @@ ALTER TABLE `order_details`
   ADD KEY `product_variant_id` (`product_variant_id`);
 
 --
--- Indexes for table `payments`
+-- Chỉ mục cho bảng `payments`
 --
 ALTER TABLE `payments`
   ADD PRIMARY KEY (`id`),
   ADD KEY `order_id` (`order_id`);
 
 --
--- Indexes for table `products`
+-- Chỉ mục cho bảng `products`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`),
   ADD KEY `category_id` (`category_id`);
 
 --
--- Indexes for table `product_variants`
+-- Chỉ mục cho bảng `product_variants`
 --
 ALTER TABLE `product_variants`
   ADD PRIMARY KEY (`id`),
@@ -1032,7 +1111,7 @@ ALTER TABLE `product_variants`
   ADD KEY `product_id` (`product_id`);
 
 --
--- Indexes for table `product_variant_images`
+-- Chỉ mục cho bảng `product_variant_images`
 --
 ALTER TABLE `product_variant_images`
   ADD PRIMARY KEY (`id`),
@@ -1040,14 +1119,14 @@ ALTER TABLE `product_variant_images`
   ADD KEY `pvi_ci_fk` (`color_id`);
 
 --
--- Indexes for table `refunds`
+-- Chỉ mục cho bảng `refunds`
 --
 ALTER TABLE `refunds`
   ADD PRIMARY KEY (`id`),
   ADD KEY `payment_id` (`payment_id`);
 
 --
--- Indexes for table `reviews`
+-- Chỉ mục cho bảng `reviews`
 --
 ALTER TABLE `reviews`
   ADD PRIMARY KEY (`id`),
@@ -1055,14 +1134,14 @@ ALTER TABLE `reviews`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `roles`
+-- Chỉ mục cho bảng `roles`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- Indexes for table `users`
+-- Chỉ mục cho bảng `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
@@ -1070,7 +1149,7 @@ ALTER TABLE `users`
   ADD KEY `role_id` (`role_id`);
 
 --
--- Indexes for table `variant_attribute_values`
+-- Chỉ mục cho bảng `variant_attribute_values`
 --
 ALTER TABLE `variant_attribute_values`
   ADD PRIMARY KEY (`id`),
@@ -1079,248 +1158,248 @@ ALTER TABLE `variant_attribute_values`
   ADD KEY `attribute_value_id` (`attribute_value_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `activity_logs`
+-- AUTO_INCREMENT cho bảng `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID log';
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID log';
 
 --
--- AUTO_INCREMENT for table `attributes`
+-- AUTO_INCREMENT cho bảng `attributes`
 --
 ALTER TABLE `attributes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT COMMENT 'ID thuộc tính', AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID thuộc tính', AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `attribute_values`
+-- AUTO_INCREMENT cho bảng `attribute_values`
 --
 ALTER TABLE `attribute_values`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT COMMENT 'ID giá trị thuộc tính', AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID giá trị thuộc tính', AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT for table `banners`
+-- AUTO_INCREMENT cho bảng `banners`
 --
 ALTER TABLE `banners`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT COMMENT 'ID banner', AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID banner', AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `blogs`
+-- AUTO_INCREMENT cho bảng `blogs`
 --
 ALTER TABLE `blogs`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT COMMENT 'ID bài viết';
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID bài viết';
 
 --
--- AUTO_INCREMENT for table `carts`
+-- AUTO_INCREMENT cho bảng `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID giỏ hàng', AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID giỏ hàng', AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT for table `cart_items`
+-- AUTO_INCREMENT cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID chi tiết giỏ hàng', AUTO_INCREMENT=113;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID chi tiết giỏ hàng', AUTO_INCREMENT=115;
 
 --
--- AUTO_INCREMENT for table `categories`
+-- AUTO_INCREMENT cho bảng `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT COMMENT 'ID danh mục', AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID danh mục', AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `coupons`
+-- AUTO_INCREMENT cho bảng `coupons`
 --
 ALTER TABLE `coupons`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT COMMENT 'ID mã giảm giá', AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID mã giảm giá', AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `notifications`
+-- AUTO_INCREMENT cho bảng `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID thông báo', AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID thông báo', AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `orders`
+-- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID đơn hàng', AUTO_INCREMENT=72;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID đơn hàng', AUTO_INCREMENT=73;
 
 --
--- AUTO_INCREMENT for table `order_details`
+-- AUTO_INCREMENT cho bảng `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID chi tiết đơn hàng', AUTO_INCREMENT=93;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID chi tiết đơn hàng', AUTO_INCREMENT=94;
 
 --
--- AUTO_INCREMENT for table `payments`
+-- AUTO_INCREMENT cho bảng `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID thanh toán', AUTO_INCREMENT=34;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID thanh toán', AUTO_INCREMENT=35;
 
 --
--- AUTO_INCREMENT for table `products`
+-- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID sản phẩm', AUTO_INCREMENT=58;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID sản phẩm', AUTO_INCREMENT=59;
 
 --
--- AUTO_INCREMENT for table `product_variants`
+-- AUTO_INCREMENT cho bảng `product_variants`
 --
 ALTER TABLE `product_variants`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID biến thể', AUTO_INCREMENT=130;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID biến thể', AUTO_INCREMENT=143;
 
 --
--- AUTO_INCREMENT for table `product_variant_images`
+-- AUTO_INCREMENT cho bảng `product_variant_images`
 --
 ALTER TABLE `product_variant_images`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID ảnh', AUTO_INCREMENT=231;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID ảnh', AUTO_INCREMENT=245;
 
 --
--- AUTO_INCREMENT for table `refunds`
+-- AUTO_INCREMENT cho bảng `refunds`
 --
 ALTER TABLE `refunds`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID hoàn tiền';
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID hoàn tiền';
 
 --
--- AUTO_INCREMENT for table `reviews`
+-- AUTO_INCREMENT cho bảng `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID đánh giá', AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID đánh giá', AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `roles`
+-- AUTO_INCREMENT cho bảng `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID người dùng', AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID người dùng', AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT for table `variant_attribute_values`
+-- AUTO_INCREMENT cho bảng `variant_attribute_values`
 --
 ALTER TABLE `variant_attribute_values`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT COMMENT 'ID liên kết', AUTO_INCREMENT=369;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID liên kết', AUTO_INCREMENT=408;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `activity_logs`
+-- Các ràng buộc cho bảng `activity_logs`
 --
 ALTER TABLE `activity_logs`
   ADD CONSTRAINT `activity_logs_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `attribute_values`
+-- Các ràng buộc cho bảng `attribute_values`
 --
 ALTER TABLE `attribute_values`
   ADD CONSTRAINT `attribute_values_ibfk_1` FOREIGN KEY (`attribute_id`) REFERENCES `attributes` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `banners`
+-- Các ràng buộc cho bảng `banners`
 --
 ALTER TABLE `banners`
   ADD CONSTRAINT `banners_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `blogs`
+-- Các ràng buộc cho bảng `blogs`
 --
 ALTER TABLE `blogs`
   ADD CONSTRAINT `blogs_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `carts`
+-- Các ràng buộc cho bảng `carts`
 --
 ALTER TABLE `carts`
   ADD CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `cart_items`
+-- Các ràng buộc cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
   ADD CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_variant_id`) REFERENCES `product_variants` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `categories`
+-- Các ràng buộc cho bảng `categories`
 --
 ALTER TABLE `categories`
   ADD CONSTRAINT `categories_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`);
 
 --
--- Constraints for table `notifications`
+-- Các ràng buộc cho bảng `notifications`
 --
 ALTER TABLE `notifications`
   ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `orders`
+-- Các ràng buộc cho bảng `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`coupon_id`) REFERENCES `coupons` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `order_details`
+-- Các ràng buộc cho bảng `order_details`
 --
 ALTER TABLE `order_details`
   ADD CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
   ADD CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`product_variant_id`) REFERENCES `product_variants` (`id`);
 
 --
--- Constraints for table `payments`
+-- Các ràng buộc cho bảng `payments`
 --
 ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`);
 
 --
--- Constraints for table `products`
+-- Các ràng buộc cho bảng `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
 
 --
--- Constraints for table `product_variants`
+-- Các ràng buộc cho bảng `product_variants`
 --
 ALTER TABLE `product_variants`
   ADD CONSTRAINT `product_variants_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `product_variant_images`
+-- Các ràng buộc cho bảng `product_variant_images`
 --
 ALTER TABLE `product_variant_images`
   ADD CONSTRAINT `pvi_ci_fk` FOREIGN KEY (`color_id`) REFERENCES `attribute_values` (`id`),
   ADD CONSTRAINT `pvi_pi_fk` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
 
 --
--- Constraints for table `refunds`
+-- Các ràng buộc cho bảng `refunds`
 --
 ALTER TABLE `refunds`
   ADD CONSTRAINT `refunds_ibfk_1` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`id`);
 
 --
--- Constraints for table `reviews`
+-- Các ràng buộc cho bảng `reviews`
 --
 ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
   ADD CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `users`
+-- Các ràng buộc cho bảng `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
 
 --
--- Constraints for table `variant_attribute_values`
+-- Các ràng buộc cho bảng `variant_attribute_values`
 --
 ALTER TABLE `variant_attribute_values`
   ADD CONSTRAINT `variant_attribute_values_ibfk_1` FOREIGN KEY (`product_variant_id`) REFERENCES `product_variants` (`id`) ON DELETE CASCADE,
