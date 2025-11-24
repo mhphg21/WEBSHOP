@@ -114,8 +114,8 @@ class UserController
             }
 
             // 5. Kiểm tra định dạng số điện thoại (chỉ chữ số, 10-12 ký tự)
-            if (!preg_match('/^0\d{9,11}$/', $phone)) {
-                $error = "Số điện thoại phải bắt đầu bằng số 0 và có độ dài từ 10-12 chữ số";
+            if (!preg_match('/^0\d{9}$/', $phone)) {
+                $error = "Số điện thoại phải bắt đầu bằng số 0 và có đúng 10 chữ số.";
                 include './Views/clients/users/register.php';
                 return;
             }
@@ -181,7 +181,7 @@ class UserController
             $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
             $userModel->updatePassword($email, $passwordHash);
 
-            $message = "Mật khẩu mới của bạn là: <strong>$newPassword</strong><br>Hãy đăng nhập và đổi mật khẩu.";
+                $message = "Mật khẩu mới của bạn là: <strong>$newPassword</strong><br>Hãy đăng nhập và đổi mật khẩu.";
         }
 
         include './Views/clients/users/forgotPassword.php';

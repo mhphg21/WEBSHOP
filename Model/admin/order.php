@@ -175,6 +175,36 @@
             $result = pdo_query2($querry, array());
             return $result;
         }
+
+        // Hiển thị tất cả đơn hàng có phân trang
+        public function getListOrdersPaginated($page, $limit)
+        {
+            $start = ($page - 1) * $limit;
+            $query = "SELECT u.name as username,
+                        u.email as email,
+                        u.phone as phone,
+                        o.id,
+                        o.total_price,
+                        o.shipping_address,
+                        o.payment_method,
+                        o.status,
+                        o.created_at,
+                        o.updated_at
+                        FROM orders o
+                        JOIN users u ON u.id = o.user_id
+                        ORDER BY o.id DESC
+                        LIMIT " . $start . ", " . $limit;
+            $result = pdo_query2($query, array());
+            return $result;
+        }
+
+        // Đếm tất cả đơn hàng
+        public function countAllOrders()
+        {
+            $query = "SELECT COUNT(*) as total FROM orders";
+            $result = pdo_query_one($query);
+            return (int) $result['total'];
+        }
         public function orderDetail($idOrder)
         {
             $querry = " SELECT 

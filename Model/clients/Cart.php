@@ -103,10 +103,18 @@ class Cart
 
         if ($cart && isset($cart['id'])) {
             $cart_id = $cart['id'];
+            
+            // Kiểm tra tồn kho
+            $stock = $this->get_stock_quantity($variant_id);
+            $current_quantity = $this->get_cart_item_quantity($cart_id, $variant_id);
+            
+            if ($current_quantity >= $stock) {
+                echo "<script>alert('Số lượng sản phẩm trong giỏ hàng đã đạt giới hạn tồn kho!');</script>";
+                return;
+            }
 
-            $sql_delete = "UPDATE cart_items SET quantity = quantity + 1 WHERE cart_id = ? AND product_variant_id = ?;
-";
-            pdo_execute($sql_delete, $cart_id, $variant_id);
+            $sql_update = "UPDATE cart_items SET quantity = quantity + 1 WHERE cart_id = ? AND product_variant_id = ?";
+            pdo_execute($sql_update, $cart_id, $variant_id);
         }
     }
 
@@ -221,5 +229,21 @@ class Cart
         $query = "UPDATE product_variants p set p.stock_quantity = p.stock_quantity - ?  WHERE p.id = ?";
         $result = pdo_execute($query, $quantity, $product_variant_id);
         return $result;
+    }
+
+    // Lấy số lượng tồn kho của biến thể
+    public function get_stock_quantity($variant_id)
+    {
+        $query = "SELECT stock_quantity FROM product_variants WHERE id = ?";
+        $result = pdo_query_one($query, $variant_id);
+        return $result ? $result['stock_quantity'] : 0;
+    }
+
+    // Lấy số lượng hiện tại trong giỏ hàng
+    public function get_cart_item_quantity($cart_id, $variant_id)
+    {
+        $query = "SELECT quantity FROM cart_items WHERE cart_id = ? AND product_variant_id = ?";
+        $result = pdo_query_one($query, $cart_id, $variant_id);
+        return $result ? $result['quantity'] : 0;
     }
 }

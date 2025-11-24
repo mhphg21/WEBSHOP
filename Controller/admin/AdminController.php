@@ -38,13 +38,18 @@ class AdminController
     public function userPage()
     {
         $admin = new User();
+        
+        // Xóa session user cũ nếu không hợp lệ
+        if (isset($_SESSION['user']) && (!is_array($_SESSION['user']) || count($_SESSION['user']) != 11)) {
+            unset($_SESSION['user']);
+        }
 
         // echo $_SESSION['role_id'];
         // die();
 
         // print_r ($arrayUser);
         // die();
-        if (isset($_POST['handleUser']) || isset($_GET['act']) === 'handleUser1') {
+        if (isset($_POST['handleUser']) || (isset($_GET['act']) && $_GET['act'] === 'handleUser1')) {
             // Lấy dữ liệu từ form
 
             $username = trim($_POST['username'] ?? '');
@@ -78,29 +83,42 @@ class AdminController
             $arrayUser = $admin->searchUsers($username, $email, $role, $phone, $address, $status, $created_start, $created_end, $page, $limit);
             // die();
         } else if (isset($_GET['act'])) {
-            //Phải lưu data vào session thì sau khi nhấn chuyển trang mới có dữ liệu để ren lại users
+            // Khi phân trang hoặc thao tác khác
             $page = $_GET['page'] ?? 1;
 
-
-            [
-                $limit,
-                $total,
-                $num_page,
-                $username,
-                $email,
-                $role,
-                $phone,
-                $address,
-                $status,
-                $created_start,
-                $created_end
-            ] = $_SESSION['user'];
-            $arrayUser = $admin->searchUsers($username, $email, $role, $phone, $address, $status, $created_start, $created_end, $page, $limit);
+            // Kiểm tra session có hợp lệ không
+            if (isset($_SESSION['user']) && is_array($_SESSION['user']) && count($_SESSION['user']) == 11) {
+                // Session hợp lệ, dùng để tìm kiếm
+                [
+                    $limit,
+                    $total,
+                    $num_page,
+                    $username,
+                    $email,
+                    $role,
+                    $phone,
+                    $address,
+                    $status,
+                    $created_start,
+                    $created_end
+                ] = $_SESSION['user'];
+                $arrayUser = $admin->searchUsers($username, $email, $role, $phone, $address, $status, $created_start, $created_end, $page, $limit);
+            } else {
+                // Session không hợp lệ hoặc không tồn tại, hiển thị tất cả
+                unset($_SESSION['user']);
+                $limit = 10;
+                $arrayUser = $admin->getListUserPaginated($page, $limit);
+                $total = $admin->countAllUsers();
+                $num_page = ceil($total / $limit);
+            }
+        } else {
+            // Hiển thị tất cả người dùng có phân trang
+            $limit = 10;
+            $page = $_GET['page'] ?? 1;
+            $arrayUser = $admin->getListUserPaginated($page, $limit);
+            $total = $admin->countAllUsers();
+            $num_page = ceil($total / $limit);
         }
-        // else {
-        //     $arrayUser = $admin->getListUser();
-        //     $total = $admin->countUser();
-        // }
 
         include './Views/admin/layouts/dashboard.php';
         include './Views/admin/users/list.php';
@@ -116,28 +134,35 @@ class AdminController
         // print_r($renderUserId);
         $renderRole = $model->getRole();
         $page = $_GET['page'] ?? 1;
+        
+        // Xóa session user cũ nếu không hợp lệ
+        if (isset($_SESSION['user']) && (!is_array($_SESSION['user']) || count($_SESSION['user']) != 11)) {
+            unset($_SESSION['user']);
+        }
+        
         // Nếu như bấm hủy sẽ quay lại danh sách user đang hiện thị trước khi nhấn sửa
         if (isset($_GET['act'])) {
-            //Phải lưu data vào session thì sau khi nhấn chuyển trang mới có dữ liệu để ren lại users
+            // Kiểm tra session có hợp lệ không
+            if (isset($_SESSION['user']) && is_array($_SESSION['user']) && count($_SESSION['user']) == 11) {
+                [
+                    $limit,
+                    $total,
+                    $num_page,
+                    $username,
+                    $email,
+                    $role,
+                    $phone,
+                    $address,
+                    $status,
+                    $created_start,
+                    $created_end
+                ] = $_SESSION['user'];
 
-
-            [
-                $limit,
-                $total,
-                $num_page,
-                $username,
-                $email,
-                $role,
-                $phone,
-                $address,
-                $status,
-                $created_start,
-                $created_end
-            ] = $_SESSION['user'];
-            // $total = $model->countFilteredUsers($username, $email, $role, $phone, $address, $status, $created_start, $created_end);
-            // $num_page = ceil($total / $limit);
-
-            $arrayUser = $model->searchUsers($username, $email, $role, $phone, $address, $status, $created_start, $created_end, $page, $limit);
+                $arrayUser = $model->searchUsers($username, $email, $role, $phone, $address, $status, $created_start, $created_end, $page, $limit);
+            } else {
+                // Session không hợp lệ, xóa
+                unset($_SESSION['user']);
+            }
         }
 
 
@@ -160,6 +185,11 @@ class AdminController
     public function orderPage($idOrder)
     {
         $model = new Order();
+        
+        // Xóa session order cũ nếu không hợp lệ
+        if (isset($_SESSION['order']) && (!is_array($_SESSION['order']) || count($_SESSION['order']) != 13)) {
+            unset($_SESSION['order']);
+        }
 
         if (isset($_POST['handleOrders'])) {
             $limit = 10;
@@ -197,27 +227,42 @@ class AdminController
             $_SESSION['order'] = $list;
             $arrayOrder = $model->searchOrder($name, $email, $phone, $shipping_address, $payment_method, $status, $created_at, $updated_at, $min_price, $max_price, $page, $limit);
         } else if (isset($_GET['act'])) {
-            $page = $_GET['page'];
-            [
-                $limit,
-                $total,
-                $num_page,
-                $name,
-                $email,
-                $phone,
-                $shipping_address,
-                $payment_method,
-                $status,
-                $created_at,
-                $updated_at,
-                $min_price,
-                $max_price
-            ] = $_SESSION['order'];
-            $arrayOrder = $model->searchOrder($name, $email, $phone, $shipping_address, $payment_method, $status, $created_at, $updated_at, $min_price, $max_price, $page, $limit);
+            $page = $_GET['page'] ?? 1;
+            
+            // Kiểm tra session order có hợp lệ không
+            if (isset($_SESSION['order']) && is_array($_SESSION['order']) && count($_SESSION['order']) == 13) {
+                // Session hợp lệ
+                [
+                    $limit,
+                    $total,
+                    $num_page,
+                    $name,
+                    $email,
+                    $phone,
+                    $shipping_address,
+                    $payment_method,
+                    $status,
+                    $created_at,
+                    $updated_at,
+                    $min_price,
+                    $max_price
+                ] = $_SESSION['order'];
+                $arrayOrder = $model->searchOrder($name, $email, $phone, $shipping_address, $payment_method, $status, $created_at, $updated_at, $min_price, $max_price, $page, $limit);
+            } else {
+                // Session không hợp lệ, hiển thị tất cả
+                unset($_SESSION['order']);
+                $limit = 10;
+                $arrayOrder = $model->getListOrdersPaginated($page, $limit);
+                $total = $model->countAllOrders();
+                $num_page = ceil($total / $limit);
+            }
         } else {
-
-            $arrayOrder = $model->listOrderPending();
-            $total = $model->countOrderProcessing();
+            // Hiển thị tất cả đơn hàng có phân trang
+            $limit = 10;
+            $page = $_GET['page'] ?? 1;
+            $arrayOrder = $model->getListOrdersPaginated($page, $limit);
+            $total = $model->countAllOrders();
+            $num_page = ceil($total / $limit);
         }
 
         include './Views/admin/layouts/dashboard.php';
@@ -361,14 +406,32 @@ class AdminController
         $model = new Coupons();
         $array_code_coupons = $model->get_code_coupons();
         if (isset($_POST['confirm_update_coupons'])) {
-            $code = htmlspecialchars($_POST['code']);
-            $discount_value = str_replace(',', '', $_POST['discount_value']); // loại bỏ dấu phẩy
-            $usage_limit = htmlspecialchars($_POST['usage_limit']);
-            // $used_count = htmlspecialchars($_POST['used_count']);
-            $start_date = htmlspecialchars($_POST['start_date']);
-            $end_date = htmlspecialchars($_POST['end_date']);
+            // Verify CSRF token
+            try {
+                CsrfHelper::verifyOrFail();
+            } catch (Exception $e) {
+                echo "<script>alert('" . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                exit;
+            }
 
-            $model->update_coupon($code, $discount_value, $usage_limit, $start_date, $end_date, $idCoupon);
+            $code = htmlspecialchars(trim($_POST['code'] ?? ''));
+            $discount_value = str_replace(',', '', $_POST['discount_value'] ?? '0'); // loại bỏ dấu phẩy
+            $usage_limit = intval($_POST['usage_limit'] ?? 0);
+            $start_date = htmlspecialchars($_POST['start_date'] ?? '');
+            $end_date = htmlspecialchars($_POST['end_date'] ?? '');
+            $status = htmlspecialchars($_POST['status'] ?? 'pending');
+
+            // Validate
+            if (empty($code) || $discount_value <= 0 || $usage_limit <= 0) {
+                echo "<script>alert('Vui lòng điền đầy đủ thông tin hợp lệ'); window.history.back();</script>";
+                exit;
+            }
+
+            $model->update_coupon($code, $discount_value, $usage_limit, $start_date, $end_date, $status, $idCoupon);
+            
+            // Regenerate token
+            CsrfHelper::regenerateToken();
+            
             header("Location: index.php?route=admin&action=list_coupons_page&act=update");
             exit;
         } else {
@@ -408,6 +471,7 @@ class AdminController
             $usage_limit = intval($_POST['usage_limit'] ?? 0);
             $start_date = htmlspecialchars($_POST['start_date'] ?? '');
             $end_date = htmlspecialchars($_POST['end_date'] ?? '');
+            $status = htmlspecialchars($_POST['status'] ?? 'pending');
 
             // Validate
             if (empty($code) || $discount_value <= 0 || $usage_limit <= 0) {
@@ -415,7 +479,7 @@ class AdminController
                 exit;
             }
 
-            $model->create_coupon($code, $discount_value, $min_order_value, $usage_limit, $start_date, $end_date);
+            $model->create_coupon($code, $discount_value, $min_order_value, $usage_limit, $start_date, $end_date, $status);
             
             // Regenerate token sau khi thành công
             CsrfHelper::regenerateToken();

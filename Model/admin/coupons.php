@@ -141,15 +141,15 @@ class Coupons
     }
 
     //--------------------update chi tiết coupons------------------------
-    public function update_coupon($code, $discount_value, $usage_limit, $start_date, $end_date, $idCoupon)
+    public function update_coupon($code, $discount_value, $usage_limit, $start_date, $end_date, $status, $idCoupon)
     {
         $query = "UPDATE coupons set 
-                        code = ?, discount_value=?,usage_limit=?,start_date=?,end_date=?
+                        code = ?, discount_value=?,usage_limit=?,start_date=?,end_date=?,status=?
                         where id = ?";
-        $result = pdo_execute($query, $code, $discount_value, $usage_limit, $start_date, $end_date, $idCoupon);
+        $result = pdo_execute($query, $code, $discount_value, $usage_limit, $start_date, $end_date, $status, $idCoupon);
     }
     //--------------------thêm coupons------------------------
-    public function create_coupon($code, $discount_value, $min_order_value, $usage_limit, $start_date, $end_date)
+    public function create_coupon($code, $discount_value, $min_order_value, $usage_limit, $start_date, $end_date, $status = 'active')
     {
         // $query = "SELECT COUNT(*) as total FROM coupons WHERE code = ?";
         // $count = pdo_query_value($query, $code);
@@ -157,8 +157,8 @@ class Coupons
         //     return false; // Mã giảm giá đã tồn tại
         // } else {
             $query = "INSERT INTO coupons (code, discount_type, discount_value, min_order_value, usage_limit, start_date, end_date, status) 
-                    VALUES (?,'fixed', ?, ?, ?, ?, ?, 'pending')";
-            $result = pdo_execute($query, $code, $discount_value, $min_order_value, $usage_limit, $start_date, $end_date);
+                    VALUES (?,'fixed', ?, ?, ?, ?, ?, ?)";
+            $result = pdo_execute($query, $code, $discount_value, $min_order_value, $usage_limit, $start_date, $end_date, $status);
             return $result;
         // }
     }

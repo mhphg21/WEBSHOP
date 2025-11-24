@@ -130,10 +130,18 @@
     <h2>MÃ ƯU ĐÃI</h2>
     <div style="cursor: pointer;" onclick="closePopup()"><i class="fa-solid fa-xmark"></i></div>
   </div>
+
+  <!-- Ô nhập mã giảm giá -->
+  <div class="voucher-input">
+    <input type="text" id="manual_coupon_code" placeholder="Nhập mã giảm giá" style="text-transform: uppercase;">
+    <button class="btn-apply" onclick="applyManualCoupon()">Áp dụng</button>
+  </div>
+  <div id="manual_coupon_message" style="color: red; font-size: 12px; margin-bottom: 10px;"></div>
+
   <?php
     if(empty($coupons)) {
   ?>
-    <div class="empty">Bạn không có mã ưu đãi nào.</div>
+    <div class="empty">Bạn không có mã ưu đãi nào trong danh sách.</div>
   <?php
     } else {
   ?>
@@ -167,3 +175,59 @@
   <div onclick="postIdVoucher()" style="cursor: pointer;" class="btn-apply-bottom">ÁP DỤNG</div>
   <?php } ?>
 </div>
+
+<script>
+  // Xử lý nhập mã thủ công
+  function applyManualCoupon() {
+    const code = document.getElementById('manual_coupon_code').value.trim().toUpperCase();
+    const messageDiv = document.getElementById('manual_coupon_message');
+    
+    if (!code) {
+      messageDiv.textContent = 'Vui lòng nhập mã giảm giá';
+      messageDiv.style.color = 'red';
+      return;
+    }
+
+    // Gửi request kiểm tra mã
+    fetch('index.php?route=clients&action=list_cart&action_cart=check_coupon_code', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'coupon_code=' + encodeURIComponent(code) + '&total_bill=<?= $total_bill ?>'
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        messageDiv.textContent = 'Áp dụng mã thành công!';
+        messageDiv.style.color = 'green';
+        
+        // Set selectedVoucher ở parent window và reload trang
+        setTimeout(() => {
+          if (window.parent && window.parent.selectedVoucher !== undefined) {
+            window.parent.selectedVoucher = data.coupon_id;
+          }
+          // Gọi hàm postIdVoucher từ parent
+          if (window.parent && window.parent.postIdVoucher) {
+            window.parent.postIdVoucher();
+          }
+        }, 500);
+      } else {
+        messageDiv.textContent = data.message || 'Mã không hợp lệ hoặc không đủ điều kiện';
+        messageDiv.style.color = 'red';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      messageDiv.textContent = 'Có lỗi xảy ra. Vui lòng thử lại';
+      messageDiv.style.color = 'red';
+    });
+  }
+
+  // Cho phép nhấn Enter để áp dụng
+  document.getElementById('manual_coupon_code')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      applyManualCoupon();
+    }
+  });
+</script>

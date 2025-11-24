@@ -183,5 +183,39 @@ class User
         $result = pdo_query_one($querry);
         return (int) $result['total'];
     }
+
+    // Hiển thị tất cả người dùng có phân trang
+    public function getListUserPaginated($page, $limit)
+    {
+        $start = ($page - 1) * $limit;
+        $query = "SELECT 
+            users.id,
+            users.name,
+            users.email,
+            roles.name AS role_name,
+            users.phone,
+            users.address,
+            users.status,
+            users.created_at,
+            users.updated_at
+        FROM users
+        JOIN roles ON users.role_id = roles.id
+        WHERE roles.name = 'customers'
+        ORDER BY users.id DESC
+        LIMIT " . $start . ", " . $limit;
+        $result = pdo_query($query);
+        return $result;
+    }
+
+    // Đếm tất cả người dùng customers
+    public function countAllUsers()
+    {
+        $query = "SELECT COUNT(*) as total
+            FROM users 
+            JOIN roles r ON users.role_id = r.id 
+            WHERE r.name = 'customers'";
+        $result = pdo_query_one($query);
+        return (int) $result['total'];
+    }
 }
 

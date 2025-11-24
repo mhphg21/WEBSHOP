@@ -188,11 +188,26 @@
     </div>
 
     <hr>
-    <h4>Sản phẩm theo từ khóa: <?= $keyword ?></h4>
+    <?php if (!empty($error_message)) { ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <strong>Lỗi!</strong> <?= htmlspecialchars($error_message) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php } elseif (isset($keyword) && !empty($keyword)) { ?>
+        <h4>Sản phẩm theo từ khóa: <?= htmlspecialchars($keyword) ?></h4>
+        <?php if (empty($pros_by_search)) { ?>
+            <div class="alert alert-info" role="alert">
+                <i class="fa-solid fa-circle-info"></i>
+                Không tìm thấy sản phẩm nào với từ khóa "<strong><?= htmlspecialchars($keyword) ?></strong>"
+            </div>
+        <?php } ?>
+    <?php } ?>
     <div id="view-more-pro" style="display: none;"></div>
     <div id="ap">
         <div class="products">
             <?php
+            if (!empty($pros_by_search)) {
             foreach ($pros_by_search as $row) {
             ?>
                 <div class="product">
@@ -246,11 +261,16 @@
                         </div>
                     </div>
                 </div>
-            <?php } ?>
+            <?php 
+                } // end foreach
+            } // end if
+            ?>
         </div>
     </div>
     <!-- -----------------------------XEM TẤT CẢ--------------------------------- -->
-    <div onclick="moreProductsSearch('<?=$keyword?>', <?=$count_pros_by_search?>)" class="view-more">
+    <?php if (!empty($pros_by_search) && $count_pros_by_search > 8) { ?>
+    <div onclick="moreProductsSearch('<?= htmlspecialchars($keyword) ?>', <?= $count_pros_by_search ?>)" class="view-more">
         Xem thêm
     </div>
+    <?php } ?>
 </div>

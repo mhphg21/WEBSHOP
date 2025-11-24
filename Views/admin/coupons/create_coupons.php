@@ -26,6 +26,8 @@ $array_filter = array_column($array_code_coupons, 'code');
                     <h4 class="mb-4 text-center fw-semibold text-primary">Thêm coupons</h4>
 
                     <form onsubmit="return validateForm(event, array_filter1)" method="post" novalidate>
+                        <?= CsrfHelper::field() ?>
+                        
                         <div class="form-floating mb-3">
                             <input type="text" name="code" class="form-control rounded-3" id="code" placeholder="Nhập mã giảm giá" required>
                             <label for="code">Mã giảm giá</label>
@@ -59,6 +61,15 @@ $array_filter = array_column($array_code_coupons, 'code');
                                     <label for="end_date">Ngày kết thúc</label>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="form-floating mb-3 mt-3">
+                            <select name="status" class="form-select rounded-3" id="status" required>
+                                <option value="active" selected>Kích hoạt</option>
+                                <option value="pending">Chờ kích hoạt</option>
+                                <option value="expired">Hết hạn</option>
+                            </select>
+                            <label for="status">Trạng thái</label>
                         </div>
 
                         <div class="d-grid mt-4">

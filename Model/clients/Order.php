@@ -155,4 +155,11 @@ class OrderClients
         $query = "UPDATE payments SET payment_status = 'paid' WHERE order_id = ?";
         pdo_execute($query, $order_id);
     }
+
+    public function get_coupon_by_code($code)
+    {
+        $query = "SELECT * FROM coupons WHERE code = ? LIMIT 1";
+        $result = pdo_query_one($query, $code);
+        return $result;
+    }
 }

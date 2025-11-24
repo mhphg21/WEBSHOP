@@ -34,13 +34,30 @@ class HomeController
 
     public function search()
     {
+        $error_message = '';
+        $keyword = '';
+        $pros_by_search = [];
+        $count_pros_by_search = 0;
+        
+        // Khởi tạo categories để tránh lỗi undefined
+        $get = new Product();
+        $categories = $get->list_category();
+        
         if (isset($_POST['search-pro'])) {
             $keyword = trim($_POST['search']);
-
-            $get = new Product();
-            $pros_by_search = $get->pros_by_search($keyword);
-            $count_pros_by_search = $get->count_pros_by_search($keyword);
-            $categories = $get->list_category();
+            
+            // Chuẩn hóa từ khóa: thay nhiều khoảng trắng liên tiếp thành 1 khoảng trắng
+            $keyword = preg_replace('/\s+/', ' ', $keyword);
+            
+            // Kiểm tra từ khóa có chứa ký tự đặc biệt không (không bao gồm khoảng trắng)
+            if (preg_match('/[@#$%^&*()+=\[\]{};:\'"<>?\/\\\\|]/', $keyword)) {
+                $error_message = 'Từ khóa tìm kiếm không được chứa ký tự đặc biệt';
+            } elseif (empty($keyword)) {
+                $error_message = 'Vui lòng nhập từ khóa tìm kiếm';
+            } else {
+                $pros_by_search = $get->pros_by_search($keyword);
+                $count_pros_by_search = $get->count_pros_by_search($keyword);
+            }
         }
         include './Views/clients/layouts/header1.php';
         include './Views/clients/products/popup-search.php';
@@ -109,13 +126,28 @@ class HomeController
             $product_variant_id = $_POST['product_size'] ?? null;
             $quantity = 1;
 
+            // Kiểm tra tồn kho
+            $stock = $cart_model->get_stock_quantity($product_variant_id);
+            
             $cart_id = $cart_model->get_or_create_cart_id($user_id);
-
             $exists = $cart_model->check_variant_exists_in_cart($cart_id, $product_variant_id);
 
             if ($exists) {
+                // Kiểm tra số lượng hiện tại trong giỏ
+                $current_quantity = $cart_model->get_cart_item_quantity($cart_id, $product_variant_id);
+                
+                if ($current_quantity >= $stock) {
+                    echo "<script>alert('Số lượng sản phẩm trong giỏ hàng đã đạt giới hạn tồn kho ($stock)!'); history.back();</script>";
+                    exit;
+                }
+                
                 $cart_model->increase_quantity($cart_id, $product_variant_id, $quantity);
             } else {
+                if ($quantity > $stock) {
+                    echo "<script>alert('Số lượng yêu cầu vượt quá tồn kho ($stock)!'); history.back();</script>";
+                    exit;
+                }
+                
                 $cart_model->add_cart_item($cart_id, $product_variant_id, $quantity);
             }
         }

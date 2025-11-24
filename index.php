@@ -1,5 +1,13 @@
 <?php
 session_start();
+
+// Xóa session cũ nếu có cấu trúc không hợp lệ
+if (isset($_SESSION['user']) && (!is_array($_SESSION['user']) || count($_SESSION['user']) != 11)) {
+    unset($_SESSION['user']);
+}
+if (isset($_SESSION['order']) && (!is_array($_SESSION['order']) || count($_SESSION['order']) != 13)) {
+    unset($_SESSION['order']);
+}
 // session_destroy();
 
 
@@ -20,6 +28,7 @@ include_once './Model/admin/user.php';
 include_once './Model/admin/product.php';
 include_once './Model/admin/order.php';
 include_once './Model/admin/coupons.php';
+include_once './Helper/CsrfHelper.php';
 
 
 
@@ -97,6 +106,10 @@ switch ($route) {
                         case 'thank_you':
                             $client = new BuyingController();
                             $client->thank_you($user_id);
+                            break;
+                        case 'check_coupon_code':
+                            $client = new BuyingController();
+                            $client->check_coupon_code();
                             break;
                     }
                 } else {
@@ -343,6 +356,12 @@ switch ($route) {
                 case "delete_variant":
                     $admin = new AdminProductController();
                     $admin->delete_variant();
+                    break;
+
+                // Xóa sản phẩm
+                case "delete_product":
+                    $admin = new AdminProductController();
+                    $admin->delete_product();
                     break;
 
                 // Danh mục sản phẩm

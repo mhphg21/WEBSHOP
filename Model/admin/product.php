@@ -468,11 +468,36 @@ ORDER BY total_products DESC";
     {
         $query = "SELECT DISTINCT av.id, av.value
                   FROM product_variants pv
-                  JOIN variant_attribute_values vav ON pv.id = vav.product_variant_id
-                  JOIN attribute_values av ON vav.attribute_value_id = av.id
+                  INNER JOIN variant_attribute_values vav ON pv.id = vav.product_variant_id
+                  INNER JOIN attribute_values av ON vav.attribute_value_id = av.id
                   WHERE pv.product_id = ? AND vav.attribute_id = 3
                   LIMIT 1";
         return pdo_query_one($query, $product_id);
+    }
+
+    // Kiểm tra sản phẩm có trong đơn hàng không
+    public function check_product_in_orders($product_id)
+    {
+        $query = "SELECT COUNT(*) as count 
+                  FROM order_details od
+                  INNER JOIN product_variants pv ON od.product_variant_id = pv.id
+                  WHERE pv.product_id = ?";
+        $result = pdo_query_one($query, $product_id);
+        return $result && $result['count'] > 0;
+    }
+
+    // Lấy tất cả ảnh của sản phẩm
+    public function get_all_product_images($product_id)
+    {
+        $query = "SELECT * FROM product_variant_images WHERE product_id = ?";
+        return pdo_query($query, $product_id);
+    }
+
+    // Xóa sản phẩm
+    public function delete_product($product_id)
+    {
+        $query = "DELETE FROM products WHERE id = ?";
+        return pdo_execute($query, $product_id);
     }
 
     // Lấy giá trị thuộc tính theo ID

@@ -3,6 +3,8 @@
     console.log(oldCode)
 </script>
 <form action="index.php?route=admin&action=list_coupons_page&actionCoupons=edit_coupons&idCoupon=<?= $detailCoupons['id'] ?>" onsubmit="return validateEdit(event, array_filter1)" method="post">
+    <?= CsrfHelper::field() ?>
+    
     <div class="mb-3">
         <label for="code" class="form-label">Mã giảm giá</label>
         <input type="text" name="code" class="form-control" value="<?= $detailCoupons['code'] ?>" id="code">
@@ -22,6 +24,14 @@
     <div class="mb-3">
         <label for="end_date" class="form-label">Ngày kết thúc</label>
         <input type="date" name="end_date" class="form-control" value="<?= date('Y-m-d', strtotime($detailCoupons['end_date'])) ?>" id="end_date_edit">
+    </div>
+    <div class="mb-3">
+        <label for="status" class="form-label">Trạng thái</label>
+        <select name="status" class="form-select" id="status_edit" required>
+            <option value="active" <?= $detailCoupons['status'] == 'active' ? 'selected' : '' ?>>Kích hoạt</option>
+            <option value="pending" <?= $detailCoupons['status'] == 'pending' ? 'selected' : '' ?>>Chờ kích hoạt</option>
+            <option value="expired" <?= $detailCoupons['status'] == 'expired' ? 'selected' : '' ?>>Hết hạn</option>
+        </select>
     </div>
 
     <button type="submit" name="confirm_update_coupons" class="btn btn-primary">Submit</button>

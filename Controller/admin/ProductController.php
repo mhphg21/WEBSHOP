@@ -713,6 +713,72 @@ class AdminProductController
         }
     }
 
+    // Xóa sản phẩm
+    public function delete_product()
+    {
+        $product_id = $_GET['id'] ?? 0;
+        
+        if ($product_id <= 0) {
+            echo "<script>alert('ID sản phẩm không hợp lệ!'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
+            return;
+        }
+        
+        $stmt = new AdminProduct();
+        
+        // Kiểm tra sản phẩm có tồn tại không
+        $product = $stmt->get_product_by_id($product_id);
+        if (!$product) {
+            echo "<script>alert('Không tìm thấy sản phẩm!'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
+            return;
+        }
+        
+        // Kiểm tra sản phẩm có trong đơn hàng không
+        if ($stmt->check_product_in_orders($product_id)) {
+            echo "<script>alert('Không thể xóa sản phẩm này vì đã có trong đơn hàng!\\nBạn có thể ẩn sản phẩm bằng cách đổi trạng thái thành Inactive.'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
+            return;
+        }
+        
+        try {
+            // Xóa tất cả ảnh của sản phẩm
+            $images = $stmt->get_all_product_images($product_id);
+            foreach ($images as $image) {
+                $file_path = './Public/Img/uploads/' . $image['image_url'];
+                if (file_exists($file_path)) {
+                    @unlink($file_path);
+                }
+                $stmt->delete_product_image($image['id']);
+            }
+            
+            // Xóa tất cả biến thể và thuộc tính
+            $variants = $stmt->get_product_variant($product_id);
+            foreach ($variants as $variant) {
+                $stmt->delete_variant_attributes($variant['id']);
+                $stmt->delete_variant($variant['id']);
+            }
+            
+            // Xóa ảnh đại diện
+            if (!empty($product['thumbnail'])) {
+                $thumb_path = './Public/Img/uploads/' . $product['thumbnail'];
+                if (file_exists($thumb_path)) {
+                    @unlink($thumb_path);
+                }
+            }
+            
+            // Xóa sản phẩm
+            $result = $stmt->delete_product($product_id);
+            
+            if ($result) {
+                echo "<script>alert('Xóa sản phẩm thành công!'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
+            } else {
+                echo "<script>alert('Xóa sản phẩm thất bại!'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
+            }
+        } catch (Exception $e) {
+            echo "<script>alert('Lỗi: " . addslashes($e->getMessage()) . "'); window.location.href = 'index.php?route=admin&action=list_product';</script>";
+        }
+    }
+
 }
+
+
 
 

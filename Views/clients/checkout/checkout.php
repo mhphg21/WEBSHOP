@@ -277,17 +277,75 @@
               <div class="title">Mã ưu đãi</div>
             </div>
 
-            <?php if (!isset($code_coupon)) { ?>
-              <div style="cursor: pointer;" onclick="chooseCoupons(<?= $total_bill_qr ?>)" class="choose-voucer">
-                <div class="text">Chọn hoặc nhập mã</div>
-                <i class="fa-solid fa-angle-right"></i>
-              </div>
-            <?php } else { ?>
-              <div style="cursor: pointer;" onclick="chooseCoupons(<?= $total_bill_qr ?>)" class="choose-voucer">
-                <div class="text"><?= $code_coupon ?></div>
-                <i class="fa-solid fa-angle-right"></i>
-              </div>
-            <?php } ?>
+            <!-- Ô nhập mã giảm giá -->
+            <div class="coupon-input-section">
+              <?php if (!isset($code_coupon)) { ?>
+                <div class="coupon-input-wrapper">
+                  <input type="text" id="coupon_code_input" placeholder="Nhập mã giảm giá">
+                  <button type="button" onclick="applyCouponCode()">Áp dụng</button>
+                </div>
+                <div id="coupon_message"></div>
+              <?php } else { ?>
+                <div class="applied-coupon">
+                  <div>
+                    <strong>Mã: <?= $code_coupon ?></strong>
+                    <span style="color: green; margin-left: 10px;">✓ Đã áp dụng</span>
+                  </div>
+                  <button type="button" onclick="removeCoupon()">Xóa</button>
+                </div>
+              <?php } ?>
+            </div>
+
+            <style>
+              .coupon-input-section {
+                margin: 15px 0;
+                padding: 15px;
+                background: #f9f9f9;
+                border-radius: 8px;
+              }
+              .coupon-input-wrapper {
+                display: flex;
+                gap: 10px;
+              }
+              #coupon_code_input {
+                text-transform: uppercase;
+                flex: 1;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              }
+              .coupon-input-wrapper button {
+                padding: 10px 20px;
+                background: #d32f2f;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                white-space: nowrap;
+              }
+              #coupon_message {
+                margin-top: 5px;
+                font-size: 12px;
+              }
+              .applied-coupon {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background: #e8f5e9;
+                border-radius: 4px;
+              }
+              .applied-coupon button {
+                padding: 5px 15px;
+                background: #f44336;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+              }
+            </style>
 
             <div id="modal" style="display: none;">
               <div id="popup-coupons"></div>
@@ -556,6 +614,62 @@
       const modal = document.getElementById('modal');
       modal.style.display = 'none';
     }
+
+    // Hàm áp dụng mã giảm giá
+    function applyCouponCode() {
+      const code = document.getElementById('coupon_code_input').value.trim().toUpperCase();
+      const messageDiv = document.getElementById('coupon_message');
+      
+      if (!code) {
+        messageDiv.innerHTML = '<span style="color: red;">Vui lòng nhập mã giảm giá</span>';
+        return;
+      }
+
+      messageDiv.innerHTML = '<span style="color: blue;">Đang kiểm tra...</span>';
+
+      // Lấy tổng tiền đơn hàng
+      const totalBill = <?= $total_bill ?>;
+
+      fetch('index.php?route=clients&action=list_cart&action_cart=check_coupon_code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'coupon_code=' + encodeURIComponent(code) + '&total_bill=' + totalBill
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          messageDiv.innerHTML = '<span style="color: green;">✓ Mã hợp lệ! Đang áp dụng...</span>';
+          
+          // Reload trang với coupon_id
+          setTimeout(() => {
+            window.location.href = `index.php?route=clients&action=list_cart&action_cart=check_out&coupon_id=${data.coupon_id}`;
+          }, 500);
+        } else {
+          messageDiv.innerHTML = '<span style="color: red;">✗ ' + (data.message || 'Mã không hợp lệ') + '</span>';
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        messageDiv.innerHTML = '<span style="color: red;">Có lỗi xảy ra. Vui lòng thử lại</span>';
+      });
+    }
+
+    // Hàm xóa mã giảm giá
+    function removeCoupon() {
+      if (confirm('Bạn có chắc muốn xóa mã giảm giá?')) {
+        window.location.href = 'index.php?route=clients&action=list_cart&action_cart=check_out';
+      }
+    }
+
+    // Cho phép nhấn Enter để áp dụng
+    document.getElementById('coupon_code_input')?.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        applyCouponCode();
+      }
+    });
   </script>
 </body>
 

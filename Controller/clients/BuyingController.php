@@ -136,4 +136,66 @@ class BuyingController
     {
         include './Views/clients/checkout/thankyou.php';
     }
+
+    public function check_coupon_code()
+    {
+        header('Content-Type: application/json');
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Invalid request']);
+            return;
+        }
+
+        $coupon_code = strtoupper(trim($_POST['coupon_code'] ?? ''));
+        $total_bill = floatval($_POST['total_bill'] ?? 0);
+
+        if (empty($coupon_code)) {
+            echo json_encode(['success' => false, 'message' => 'Vui lòng nhập mã giảm giá']);
+            return;
+        }
+
+        $order = new OrderClients();
+        $coupon = $order->get_coupon_by_code($coupon_code);
+
+        if (!$coupon) {
+            echo json_encode(['success' => false, 'message' => 'Mã giảm giá không tồn tại']);
+            return;
+        }
+
+        // Kiểm tra trạng thái
+        if ($coupon['status'] !== 'active') {
+            echo json_encode(['success' => false, 'message' => 'Mã giảm giá không còn hiệu lực']);
+            return;
+        }
+
+        // Kiểm tra hạn sử dụng
+        $now = date('Y-m-d');
+        if ($now < $coupon['start_date'] || $now > $coupon['end_date']) {
+            echo json_encode(['success' => false, 'message' => 'Mã giảm giá đã hết hạn']);
+            return;
+        }
+
+        // Kiểm tra số lần sử dụng
+        if ($coupon['used_count'] >= $coupon['usage_limit']) {
+            echo json_encode(['success' => false, 'message' => 'Mã giảm giá đã hết lượt sử dụng']);
+            return;
+        }
+
+        // Kiểm tra giá trị đơn hàng tối thiểu
+        if ($total_bill < $coupon['min_order_value']) {
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Đơn hàng chưa đủ ' . number_format($coupon['min_order_value']) . ' VNĐ để áp dụng mã này'
+            ]);
+            return;
+        }
+
+        // Mã hợp lệ
+        echo json_encode([
+            'success' => true,
+            'coupon_id' => $coupon['id'],
+            'discount_value' => $coupon['discount_value'],
+            'message' => 'Áp dụng mã thành công'
+        ]);
+    }
 }

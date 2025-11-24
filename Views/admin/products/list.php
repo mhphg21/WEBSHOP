@@ -59,9 +59,13 @@
                             <td><?= $product["updated_at"] ?></td>
                             <td>
                                 <a href="index.php?route=admin&action=detail_product&id=<?= $product["id"] ?>"
-                                    class="btn btn-sm btn-success"><i class="fas fa-eye"></i></a>
+                                    class="btn btn-sm btn-success" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
                                 <a href="index.php?route=admin&action=update_product&id=<?= $product["id"] ?>"
-                                    class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                                    class="btn btn-sm btn-warning" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
+                                <button onclick="deleteProduct(<?= $product['id'] ?>, '<?= htmlspecialchars($product['name']) ?>')" 
+                                    class="btn btn-sm btn-danger" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -103,3 +107,11 @@
         </nav>
     </div>
 </div>
+
+<script>
+function deleteProduct(productId, productName) {
+    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm "' + productName + '"?\n\nLưu ý: Sản phẩm và tất cả biến thể, ảnh liên quan sẽ bị xóa vĩnh viễn!')) {
+        window.location.href = 'index.php?route=admin&action=delete_product&id=' + productId;
+    }
+}
+</script>
