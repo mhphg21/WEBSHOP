@@ -36,6 +36,21 @@ class HomeController
     {
         if (isset($_POST['search-pro'])) {
             $keyword = trim($_POST['search']);
+            
+            // Validate input rỗng
+            if (empty($keyword)) {
+                echo "<script>alert('Vui lòng nhập từ khóa tìm kiếm'); history.back();</script>";
+                exit;
+            }
+            
+            // Validate ký tự đặc biệt (chỉ cho phép chữ, số, khoảng trắng, dấu gạch ngang, ký tự tiếng Việt)
+            if (preg_match('/[^a-zA-Z0-9\sÀ-ỹ\-]/', $keyword)) {
+                echo "<script>alert('Từ khóa tìm kiếm không hợp lệ. Vui lòng không sử dụng ký tự đặc biệt'); history.back();</script>";
+                exit;
+            }
+            
+            // Chuẩn hóa khoảng trắng - loại bỏ khoảng trắng thừa (nhiều khoảng trắng liên tiếp thành 1)
+            $keyword = preg_replace('/\s+/', ' ', $keyword);
 
             $get = new Product();
             $pros_by_search = $get->pros_by_search($keyword);
@@ -220,4 +235,21 @@ class HomeController
     //         // $get->update_status_($order_id);
     //     }
     // }
+    
+    // API endpoint để lấy số lượng giỏ hàng
+    public function get_cart_count() {
+        header('Content-Type: application/json');
+        
+        $user_id = $_SESSION['user']['id'] ?? '';
+        $count = 0;
+        
+        if ($user_id) {
+            $cart_model = new Cart();
+            $cart_id = $cart_model->get_or_create_cart_id($user_id);
+            $count = $cart_model->count_cart_items($cart_id);
+        }
+        
+        echo json_encode(['success' => true, 'count' => $count]);
+        exit;
+    }
 }

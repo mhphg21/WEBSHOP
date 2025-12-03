@@ -38,6 +38,14 @@ class Cart
         return $result;
     }
 
+    // Đếm số lượng sản phẩm trong giỏ hàng theo cart_id
+    public function count_cart_items($cart_id)
+    {
+        $query = "SELECT COUNT(id) AS count FROM cart_items WHERE cart_id = ?";
+        $result = pdo_query_one($query, $cart_id);
+        return $result ? (int)$result['count'] : 0;
+    }
+
     public function increase_quantity($cart_id, $variant_id, $quantity)
     {
         $query = "UPDATE cart_items SET quantity = quantity + ? WHERE cart_id = ? AND product_variant_id = ?";

@@ -165,7 +165,10 @@
                             <div class="col-md-8">
                                 <div class="mb-3">
                                     <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
-                                    <input type="text" name="name" id="product_name" class="form-control" placeholder="VD: Áo thun bé gái cotton USA..." required>
+                                    <input type="text" name="name" id="product_name" class="form-control" 
+                                           placeholder="VD: Áo thun bé gái cotton USA..." required 
+                                           oninput="validateProductName(this)">
+                                    <div class="invalid-feedback" id="name_error">Tên sản phẩm không được chứa ký tự đặc biệt</div>
                                 </div>
 
                                 <div class="mb-3">
@@ -176,11 +179,13 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <label class="form-label">Giá gốc <span class="text-danger">*</span></label>
-                                        <input type="number" name="price" id="product_price" class="form-control" placeholder="0" min="0" required>
+                                        <input type="number" name="price" id="product_price" class="form-control" placeholder="0" min="0" step="0.01" required oninput="validatePrice(this)">
+                                        <div class="invalid-feedback">Giá gốc không được là số âm</div>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Giá khuyến mãi <span class="text-danger">*</span></label>
-                                        <input type="number" name="sale_price" id="product_sale_price" class="form-control" placeholder="0" min="0" required>
+                                        <input type="number" name="sale_price" id="product_sale_price" class="form-control" placeholder="0" min="0" step="0.01" required oninput="validatePrice(this)">
+                                        <div class="invalid-feedback">Giá khuyến mãi không được là số âm</div>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Danh mục <span class="text-danger">*</span></label>
@@ -633,5 +638,71 @@ document.getElementById('productForm').addEventListener('submit', function(e) {
         goToTab3();
         return false;
     }
+    
+    // Kiểm tra SKU trùng nhau trong các biến thể
+    const skus = [];
+    let hasDuplicate = false;
+    let duplicateSKU = '';
+    
+    variants.forEach(row => {
+        const skuInput = row.querySelector('input[name*="[sku]"]');
+        if (skuInput) {
+            const sku = skuInput.value.trim();
+            if (sku) {
+                if (skus.includes(sku)) {
+                    hasDuplicate = true;
+                    duplicateSKU = sku;
+                    skuInput.classList.add('is-invalid');
+                } else {
+                    skus.push(sku);
+                    skuInput.classList.remove('is-invalid');
+                }
+            }
+        }
+    });
+    
+    if (hasDuplicate) {
+        e.preventDefault();
+        alert(`❌ Mã SKU "${duplicateSKU}" bị trùng! Mỗi biến thể phải có mã SKU khác nhau.`);
+        return false;
+    }
 });
+
+// Validate price function
+function validatePrice(input) {
+    const value = parseFloat(input.value);
+    
+    // Kiểm tra số âm
+    if (value < 0) {
+        input.setCustomValidity('Giá không được là số âm');
+        input.classList.add('is-invalid');
+        return false;
+    } else {
+        input.setCustomValidity('');
+        input.classList.remove('is-invalid');
+        return true;
+    }
+}
+
+// Validate tên sản phẩm không chứa ký tự đặc biệt
+function validateProductName(input) {
+    const value = input.value;
+    // Chỉ cho phép chữ, số, khoảng trắng, dấu gạch ngang, ký tự tiếng Việt
+    const specialChars = /[^a-zA-Z0-9\s\À-\ỹ\-]/;
+    
+    if (specialChars.test(value)) {
+        input.setCustomValidity('Tên sản phẩm không được chứa ký tự đặc biệt');
+        input.classList.add('is-invalid');
+        const errorDiv = document.getElementById('name_error');
+        if (errorDiv) errorDiv.style.display = 'block';
+        return false;
+    } else {
+        input.setCustomValidity('');
+        input.classList.remove('is-invalid');
+        const errorDiv = document.getElementById('name_error');
+        if (errorDiv) errorDiv.style.display = 'none';
+        return true;
+    }
+}
 </script>
+

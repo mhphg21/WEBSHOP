@@ -14,7 +14,17 @@ class BuyingController
 
         $list_size = $get->list_size_by_user($user_id);
 
+        // Kiểm tra nếu là AJAX request thì không include header/footer
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+                  strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        
+        if (!$isAjax) {
+            include './Views/clients/layouts/header1.php';
+        }
         include './Views/clients/cart/list_cart.php';
+        if (!$isAjax) {
+            include './Views/clients/layouts/footer.php';
+        }
     }
 
     public function deleteCart()

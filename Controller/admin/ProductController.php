@@ -158,6 +158,22 @@ class AdminProductController
     public function create_product_action()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validate giá gốc và giá khuyến mãi
+            $price = $_POST['price'] ?? 0;
+            $sale_price = $_POST['sale_price'] ?? 0;
+            
+            if ($price < 0 || $sale_price < 0) {
+                echo "<script>alert('❌ Giá gốc và giá khuyến mãi không được là số âm!'); history.back();</script>";
+                exit;
+            }
+            
+            // Validate tên sản phẩm không chứa ký tự đặc biệt
+            $product_name = $_POST['name'] ?? '';
+            if (preg_match('/[^a-zA-Z0-9\sÀ-ỹ\-]/', $product_name)) {
+                echo "<script>alert('❌ Tên sản phẩm không được chứa ký tự đặc biệt!'); history.back();</script>";
+                exit;
+            }
+            
             $upload_dir = './Public/Img/uploads/';
             $new_image_name = '';
             
@@ -179,8 +195,8 @@ class AdminProductController
                 $_POST['name'] ?? '', 
                 $_POST['description'] ?? '', 
                 $new_image_name, 
-                $_POST['price'] ?? 0, 
-                $_POST['sale_price'] ?? 0, 
+                $price, 
+                $sale_price, 
                 $_POST['status'] ?? '', 
                 1, // is_new
                 0  // is_hot
@@ -189,16 +205,43 @@ class AdminProductController
             // b2: Thêm biến thể
             $material = $_POST['material'] ?? null;
             
+            // Kiểm tra SKU trùng nhau trong các biến thể
+            $skus = [];
             if (isset($_POST['variants'])) {
                 foreach ($_POST['variants'] as $value) {
-                    if ($stmt->check_variant_exists($value['sku'] ?? '')) continue;
+                    $sku = $value['sku'] ?? '';
+                    if (in_array($sku, $skus)) {
+                        echo "<script>alert('❌ Mã SKU \"$sku\" bị trùng! Mỗi biến thể phải có mã SKU khác nhau.'); history.back();</script>";
+                        exit;
+                    }
+                    $skus[] = $sku;
+                }
+            }
+            
+            if (isset($_POST['variants'])) {
+                foreach ($_POST['variants'] as $value) {
+                    // Kiểm tra SKU đã tồn tại trong hệ thống
+                    if ($stmt->check_variant_exists($value['sku'] ?? '')) {
+                        $sku = $value['sku'] ?? '';
+                        echo "<script>alert('❌ Mã SKU \"$sku\" đã tồn tại trong hệ thống!'); history.back();</script>";
+                        exit;
+                    }
+                    
+                    // Validate giá của từng biến thể
+                    $variant_price = $value['price'] ?? 0;
+                    $variant_sale_price = $value['sale_price'] ?? 0;
+                    
+                    if ($variant_price < 0 || $variant_sale_price < 0) {
+                        echo "<script>alert('❌ Giá của biến thể không được là số âm!'); history.back();</script>";
+                        exit;
+                    }
                     
                     $pv_id = $stmt->create_product_variants(
                         $product_id, 
                         0, // is_hot
                         $value['sku'] ?? '', 
-                        $value['price'] ?? 0, 
-                        $value['sale_price'] ?? 0, 
+                        $variant_price, 
+                        $variant_sale_price, 
                         $value['quantity'] ?? 0, 
                         $value['status'] ?? 'active'
                     );

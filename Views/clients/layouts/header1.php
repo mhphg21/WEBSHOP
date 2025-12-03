@@ -227,6 +227,28 @@
       text-decoration: none;
       color: white;
     }
+
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: #ff0000;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+      border: 2px solid white;
+    }
+
+    .cart-container {
+      position: relative;
+      display: inline-block;
+    }
   </style>
 </head>
 
@@ -249,11 +271,34 @@
         </ul>
       </div>
       <div class="search-header">
-        <form id="searchForm" class="form-header" method="POST" action="index.php?route=clients&action=search">
-          <input id="searchInput" class="input-header" name="search" type="text" placeholder="Tìm kiếm sản phẩm.." required />
+        <form id="searchForm" class="form-header" method="POST" action="index.php?route=clients&action=search" onsubmit="return validateSearch()">
+          <input id="searchInput" class="input-header" name="search" type="text" placeholder="Tìm kiếm sản phẩm.." />
           <button class="bt-header" name="search-pro" type="submit">Tìm kiếm</button>
         </form>
       </div>
+      <script>
+      function validateSearch() {
+          const searchInput = document.getElementById('searchInput');
+          const keyword = searchInput.value.trim();
+          
+          // Kiểm tra rỗng
+          if (keyword === '') {
+              alert('Vui lòng nhập từ khóa tìm kiếm');
+              searchInput.focus();
+              return false;
+          }
+          
+          // Kiểm tra ký tự đặc biệt (chỉ cho phép chữ, số, khoảng trắng, dấu gạch ngang)
+          const specialChars = /[^a-zA-Z0-9\sÀ-ỹ\-]/;
+          if (specialChars.test(keyword)) {
+              alert('Từ khóa tìm kiếm không hợp lệ. Vui lòng không sử dụng ký tự đặc biệt');
+              searchInput.focus();
+              return false;
+          }
+          
+          return true;
+      }
+      </script>
       <!-- <div id="pro-search" style="display: none;"></div> -->
       <div class="nav-right">
         <div class="shop">
@@ -268,8 +313,25 @@
           </a>
         </div>
         <div class="shop">
-          <div onclick="show_list_cart()" class="nav-link"><img width="20px" src="Public/Img/resources/shopping-cart.png" alt="" />
-            <div class="text">Giỏ hàng</div>
+          <div class="cart-container">
+            <div onclick="show_list_cart()" class="nav-link" style="cursor: pointer;">
+              <img width="20px" src="Public/Img/resources/shopping-cart.png" alt="" />
+              <div class="text">Giỏ hàng</div>
+            </div>
+            <?php 
+            // Tính count_cart trực tiếp tại header
+            if (!isset($count_cart)) {
+                $count_cart = 0;
+                if (isset($_SESSION['user']['id'])) {
+                    $temp_cart = new Cart();
+                    $temp_cart_id = $temp_cart->get_or_create_cart_id($_SESSION['user']['id']);
+                    $count_cart = $temp_cart->count_cart_items($temp_cart_id);
+                }
+            }
+            ?>
+            <span id="cart-badge" class="cart-badge" style="display: <?= ($count_cart > 0) ? 'flex' : 'none' ?>">
+              <?= $count_cart > 99 ? '99+' : $count_cart ?>
+            </span>
           </div>
         </div>
         <div class="popup-list-cart" id="popup-cart">

@@ -150,21 +150,24 @@ class Product
         WHERE vav.attribute_id = 1 
         AND p.status = 'active' 
         AND pv.status = 'active'
-        AND p.name LIKE ?
+        AND (p.name LIKE ? OR pv.sku LIKE ?)
         GROUP BY p.id
         ORDER BY p.id ASC
         LIMIT 8 OFFSET 0";
         $keyword = "%$keyword%";
 
-        $result = pdo_query($query, $keyword);
+        $result = pdo_query($query, $keyword, $keyword);
         return $result;
     }
 
     public function count_pros_by_search($keyword)
     {
-        $query = "SELECT COUNT(id) AS count FROM products WHERE name LIKE ?";
+        $query = "SELECT COUNT(DISTINCT p.id) AS count 
+                  FROM products p 
+                  JOIN product_variants pv ON pv.product_id = p.id 
+                  WHERE (p.name LIKE ? OR pv.sku LIKE ?)";
         $keyword = "%$keyword%";
-        return pdo_query_value($query, $keyword);
+        return pdo_query_value($query, $keyword, $keyword);
     }
 
     public function get_more_search($limit, $keyword)
@@ -180,12 +183,12 @@ class Product
         WHERE vav.attribute_id = 1 
         AND p.status = 'active' 
         AND pv.status = 'active'
-        AND p.name LIKE ?
+        AND (p.name LIKE ? OR pv.sku LIKE ?)
         GROUP BY p.id
         ORDER BY p.id ASC
         LIMIT $limit OFFSET 0";
         $keyword = "%$keyword%";
-        $result = pdo_query($query, $keyword);
+        $result = pdo_query($query, $keyword, $keyword);
         return $result;
     }
 

@@ -150,6 +150,10 @@ switch ($route) {
                 $client = new HomeController();
                 $client->detail($user_id);
                 break;
+            case 'get_cart_count':
+                $client = new HomeController();
+                $client->get_cart_count();
+                break;
         }
         break;
     case 'admin':

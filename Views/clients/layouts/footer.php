@@ -68,6 +68,33 @@
 
 <!-- ---------------------------TRANG HOME------------------------------- -->
 <script>
+// Hàm cập nhật badge giỏ hàng
+function updateCartBadge(count) {
+    const badge = document.getElementById('cart-badge');
+    if (badge) {
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.style.display = count > 0 ? 'flex' : 'none';
+    }
+}
+
+// Hàm lấy số lượng giỏ hàng từ server
+function fetchCartCount() {
+    fetch('index.php?route=clients&action=get_cart_count', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateCartBadge(data.count);
+        }
+    })
+    .catch(error => console.error('Error fetching cart count:', error));
+}
+
     let limit = 8;
     const viewMore = document.getElementById("view-more-pro");
 
@@ -193,7 +220,12 @@
             return;
         }
 
-        fetch(`index.php?route=clients&action=list_cart`)
+        fetch(`index.php?route=clients&action=list_cart`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
             .then(res => res.text())
             .then(data => {
                 // console.log('data: ', data);
