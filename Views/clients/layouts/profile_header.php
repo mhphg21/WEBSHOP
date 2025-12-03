@@ -29,6 +29,7 @@
             transition: background-color 0.3s, color 0.3s;
             border-radius: 6px;
             margin: 4px 10px;
+            position: relative;
         }
 
         .admin-sidebar-link:hover {
@@ -46,12 +47,39 @@
             padding-left: 20px;
             overflow-y: auto;
         }
+
+        .notification-count {
+            position: absolute;
+            top: 8px;
+            right: 15px;
+            background-color: #ff0000;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            min-width: 20px;
+            text-align: center;
+        }
     </style>
     <div class="admin-wrapper">
         <nav class="admin-sidebar">
             <div class="dropdown">
                 <a class="admin-sidebar-link" href="index.php?route=clients&action=notifications<?= isset($user_id) && !empty($user_id) ? '&user_id=' . $user_id : '' ?>">
                     <i class="fa-solid fa-bell"></i> Thông báo
+                    <?php 
+                    // Lấy số lượng thông báo chưa đọc
+                    if (!isset($notification_count)) {
+                        $notification_count = 0;
+                        if (isset($_SESSION['user']['id'])) {
+                            $temp_notification = new Notification();
+                            $notification_count = $temp_notification->count_unread_notifications($_SESSION['user']['id']);
+                        }
+                    }
+                    if ($notification_count > 0):
+                    ?>
+                        <span class="notification-count"><?= $notification_count > 99 ? '99+' : $notification_count ?></span>
+                    <?php endif; ?>
                 </a>
             </div>
             <div class="dropdown">
