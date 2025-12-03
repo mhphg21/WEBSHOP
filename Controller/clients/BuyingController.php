@@ -125,6 +125,10 @@ class BuyingController
             }
             $get->insert_payments($order_id, $payment_method);
 
+            // Tạo thông báo cho đơn hàng mới
+            $notification = new Notification();
+            $message = "Đơn hàng #{$order_id} của bạn đã được đặt thành công! Tổng tiền: " . number_format($total_price) . "đ. Chúng tôi đang xử lý đơn hàng của bạn.";
+            $notification->create_notification($user_id, $message, 'order');
 
             //Xoá giỏ hàng sau khi checkout
             $get->clearCartByUserId($user_id);

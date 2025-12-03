@@ -264,6 +264,32 @@ class AdminController
         $model = new Order();
         $statusOrder = $model->handleUpdateOrderStatus($newStatus, $idOrder);
         $statusPayment = $model->handleUpdatePaymentStatus($newStatus, $idOrder);
+        
+        // Tạo thông báo cho khách hàng khi cập nhật trạng thái đơn hàng
+        $user_id = $model->get_user_id_by_order($idOrder);
+        if ($user_id) {
+            $notification = new Notification();
+            $status_text = [
+                'pending' => 'đang chờ xử lý',
+                'processing' => 'đang được xử lý',
+                'shipped' => 'đang vận chuyển',
+                'delivered' => 'đã giao thành công',
+                'cancelled' => 'đã bị hủy'
+            ];
+            $status_message = $status_text[$newStatus] ?? $newStatus;
+            $message = "Đơn hàng #{$idOrder} của bạn đã được cập nhật trạng thái: {$status_message}.";
+            
+            if ($newStatus == 'delivered') {
+                $message .= " Cảm ơn bạn đã mua hàng!";
+            } elseif ($newStatus == 'shipped') {
+                $message .= " Đơn hàng đang trên đường giao đến bạn.";
+            } elseif ($newStatus == 'cancelled') {
+                $message .= " Nếu có thắc mắc, vui lòng liên hệ chúng tôi.";
+            }
+            
+            $notification->create_notification($user_id, $message, 'order');
+        }
+        
         include './Views/admin/layouts/dashboard.php';
         include './Views/admin/orders/listOrders.php';
         include './Views/admin/layouts/footer.php';
@@ -275,6 +301,14 @@ class AdminController
         $model = new Order();
         $statusOrder = $model->handleUpdateOrderStatus($newStatus, $idOrder);
         $statusPayment = $model->handleUpdatePaymentStatus($newStatus, $idOrder);
+        
+        // Tạo thông báo khi hủy đơn hàng
+        $user_id = $model->get_user_id_by_order($idOrder);
+        if ($user_id) {
+            $notification = new Notification();
+            $message = "Đơn hàng #{$idOrder} của bạn đã bị hủy. Nếu có thắc mắc, vui lòng liên hệ với chúng tôi để được hỗ trợ.";
+            $notification->create_notification($user_id, $message, 'order');
+        }
     }
 
 
@@ -390,9 +424,7 @@ class AdminController
     {
         $model = new Coupons();
         $array_code_coupons = $model->get_code_coupons();
-        // print_r($array_code_coupons);
-        // echo "<pre>";
-        // die();
+        
         if (isset($_POST['confirm_create_coupons'])) {
             if (isset($_POST['confirm_create_coupons'])) {
             $code = htmlspecialchars($_POST['code']);

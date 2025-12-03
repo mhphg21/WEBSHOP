@@ -7,11 +7,13 @@ session_start();
 include_once './Controller/clients/HomeController.php';
 include_once './Controller/clients/UserController.php';
 include_once './Controller/clients/BuyingController.php';
+include_once './Controller/clients/NotificationController.php';
 include_once './Model/Pdo.php';
 include_once './Model/clients/Product.php';
 include_once './Model/clients/Cart.php';
 include_once './Model/clients/UserClients.php';
 include_once './Model/clients/Order.php';
+include_once './Model/clients/Notification.php';
 
 // Include_include_once necessary admin controllers and models
 include_once './Controller/admin/AdminController.php';
@@ -153,6 +155,26 @@ switch ($route) {
             case 'get_cart_count':
                 $client = new HomeController();
                 $client->get_cart_count();
+                break;
+            case 'notifications':
+                $notification = new NotificationController();
+                $notification->index($user_id);
+                break;
+            case 'notification_detail':
+                $notification = new NotificationController();
+                $notification->view($user_id);
+                break;
+            case 'notification_mark_all':
+                $notification = new NotificationController();
+                $notification->mark_all_read($user_id);
+                break;
+            case 'get_notification_count':
+                $notification = new NotificationController();
+                $notification->get_unread_count();
+                break;
+            case 'notification_delete':
+                $notification = new NotificationController();
+                $notification->delete($user_id);
                 break;
         }
         break;

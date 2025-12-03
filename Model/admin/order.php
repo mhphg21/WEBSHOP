@@ -245,6 +245,13 @@
             return $result;
         }
 
+        public function get_user_id_by_order($idOrder)
+        {
+            $querry = "SELECT user_id FROM orders WHERE id = ?";
+            $result = pdo_query_one($querry, $idOrder);
+            return $result ? $result['user_id'] : null;
+        }
+
         public function handle_cancel_order($newStatus, $idOrder)
         {
             $querry = "UPDATE orders SET status = ? WHERE id = ?";

@@ -50,7 +50,7 @@
     <div class="admin-wrapper">
         <nav class="admin-sidebar">
             <div class="dropdown">
-                <a class="admin-sidebar-link" href="#" data-bs-toggle="collapse" data-bs-target="#productMenu" aria-expanded="false">
+                <a class="admin-sidebar-link" href="index.php?route=clients&action=notifications<?= isset($user_id) && !empty($user_id) ? '&user_id=' . $user_id : '' ?>">
                     <i class="fa-solid fa-bell"></i> Thông báo
                 </a>
             </div>
